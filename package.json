@@ -1,0 +1,32 @@
+{
+  "name": "ssb-initial-sync",
+  "version": "0.0.1",
+  "description": "handle the initial sync as you join scuttlebutt for the first time",
+  "main": "index.js",
+  "scripts": {
+    "start": "electron index.js",
+    "postinstall": "npm run rebuild",
+    "rebuild": "cross-script npm rebuild --runtime=electron \"--target=$(electron -v)\" \"--abi=$(electron --abi)\" --disturl=https://atom.io/download/atom-shell",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "scuttlebutt",
+    "initial-sync"
+  ],
+  "author": "mixmix",
+  "license": "AGPL-3.0",
+  "dependencies": {
+    "cross-script": "^1.0.5",
+    "electron": "^2.0.16",
+    "electron-default-menu": "^1.0.1",
+    "electron-window-state": "^5.0.3",
+    "mutant": "^3.22.1",
+    "ssb-client": "^4.6.1",
+    "ssb-config": "^3.2.3",
+    "ssb-ebt": "^5.3.10",
+    "ssb-gossip": "^1.0.4",
+    "ssb-invite": "^2.0.3",
+    "ssb-replicate": "^1.0.4",
+    "ssb-server": "^14.0.4"
+  }
+}
