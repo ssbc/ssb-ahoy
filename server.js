@@ -48,11 +48,12 @@ function script (config) {
       h('title', 'InitialSync')
     )
 
+    // these are the Primary Server plugins
     var Server = require('ssb-server')
       .use(require('ssb-server/plugins/master'))
       .use(require('ssb-gossip'))
       .use(require('ssb-replicate'))
-      .use(require('ssb-invite'))
+      // .use(require('ssb-invite')) // no pub invites at this step currently!
       .use(require('ssb-ebt'))
 
     var server = Server(${JSON.stringify(config)})
@@ -66,7 +67,9 @@ function script (config) {
     )
 
     electron.ipcRenderer.send('server-started')
-    electron.ipcRenderer.on('server-close', () => {
+
+    electron.ipcRenderer.once('server-close', () => {
+      console.log('server: RECEIVED << server-close')
       server.close()
       electron.ipcRenderer.send('server-closed')
     })

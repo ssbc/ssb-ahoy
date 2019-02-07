@@ -8,7 +8,10 @@ const Server = require('./server')
 
 var openWindow = require('./window')
 
-var windows = {}
+var windows = {
+  server: null,
+  frontend: null
+}
 var quitting = false
 
 console.log('STARTING electron')
@@ -49,11 +52,11 @@ electron.app.on('ready', () => {
   })
 
   // allow inspecting of background process
-  electron.ipcMain.on('open-background-devtools', function (ev, config) {
-    if (windows.background) {
-      windows.background.webContents.openDevTools({ detach: true })
-    }
-  })
+  // electron.ipcMain.on('open-background-devtools', function (ev, config) {
+  //   if (windows.background) {
+  //     windows.background.webContents.openDevTools({ detach: true })
+  //   }
+  // })
 })
 
 function PrimarySync () {
@@ -64,7 +67,7 @@ function PrimarySync () {
     friends: { hops: 1 }
   })
 
-  Server(config)
+  windows.server = Server(config)
 
   ipcMain.once('server-started', startPrimaryView)
 
@@ -76,7 +79,7 @@ function PrimarySync () {
       defaultHeight: 768
     })
     // just the window for this mode
-    windows.primarySync = openWindow(Path.join(__dirname, 'views/primary.js'), {
+    windows.frontend = openWindow(Path.join(__dirname, 'views/primary.js'), {
       minWidth: 800,
       x: windowState.x,
       y: windowState.y,
@@ -90,19 +93,29 @@ function PrimarySync () {
       backgroundColor: '#EEE',
       icon: './assets/icon.png'
     })
-    windowState.manage(windows.primarySync)
-    windows.primarySync.setSheetOffset(40)
-    windows.primarySync.on('close', function (e) {
+    windowState.manage(windows.frontend)
+    windows.frontend.setSheetOffset(40)
+    windows.frontend.on('close', function (e) {
       if (!quitting && process.platform === 'darwin') {
         e.preventDefault()
-        windows.primarySync.hide()
+        windows.frontend.hide()
       }
     })
-    windows.primarySync.on('closed', function () {
-      windows.primarySync = null
+    windows.frontend.on('closed', function () {
+      windows.frontend = null
       if (process.platform !== 'darwin') electron.app.quit()
     })
   }
 }
+
+// TEMP? relay server close message out to the server rendered (process)
+// Possible improvement: send messages directly between windows with
+//   https://github.com/electron/electron/blob/v2.0.16/docs/api/ipc-renderer.md#ipcrenderersendtowindowid-channel--arg1-arg2-
+
+ipcMain.on('server-close', function () {
+  console.log('main: RELAYING server-close')
+  if (!windows.server) return
+  windows.server.webContents.send('server-close')
+})
 
 ipcMain.on('log', function () { console.log(arguments) })
