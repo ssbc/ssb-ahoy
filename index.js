@@ -12,7 +12,11 @@ var windows = {
   server: null,
   frontend: null
 }
-var quitting = false
+
+const state = {
+
+  quitting: false
+}
 
 console.log('STARTING electron')
 electron.app.on('ready', () => {
@@ -48,7 +52,7 @@ electron.app.on('ready', () => {
   })
 
   electron.app.on('before-quit', function () {
-    quitting = true
+    state.quitting = true
   })
 
   // allow inspecting of background process
@@ -62,16 +66,18 @@ electron.app.on('ready', () => {
 function PrimarySync () {
   if (windows.primarySync) return
 
-  const appName = process.env.ssb_appname || process.env.SSB_APPNAME || 'ssb'
+  // const appName = process.env.ssb_appname || process.env.SSB_APPNAME || 'ssb'
+  const appName = process.env.ssb_appname || process.env.SSB_APPNAME || 'xim' // TODO change
   const config = Config(appName, {
-    friends: { hops: 1 }
+    friends: { hops: 2 }
   })
 
-  windows.server = Server(config)
+  const plugins = ['ssb-about', 'ssb-private', 'ssb-query', 'ssb-suggest']
+  windows.server = Server(config, plugins)
 
-  ipcMain.once('server-started', startPrimaryView)
+  ipcMain.once('server-started', () => startPrimaryView(config))
 
-  function startPrimaryView (ev, config) {
+  function startPrimaryView (config) {
     console.log('server started!')
 
     var windowState = WindowState({
@@ -84,19 +90,12 @@ function PrimarySync () {
       x: windowState.x,
       y: windowState.y,
       width: windowState.width,
-      height: windowState.height,
-      autoHideMenuBar: true,
-      title: 'InitialSync',
-      frame: false,
-      titleBarStyle: 'hidden',
-      show: true,
-      backgroundColor: '#EEE',
-      icon: './assets/icon.png'
-    })
+      height: windowState.height
+    }, config)
     windowState.manage(windows.frontend)
     windows.frontend.setSheetOffset(40)
     windows.frontend.on('close', function (e) {
-      if (!quitting && process.platform === 'darwin') {
+      if (!state.quitting && process.platform === 'darwin') {
         e.preventDefault()
         windows.frontend.hide()
       }

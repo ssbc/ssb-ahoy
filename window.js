@@ -1,7 +1,18 @@
 const electron = require('electron')
 const join = require('path').join
 
-module.exports = function window (path, opts) {
+module.exports = function window (path, opts, config) {
+  // TODO extract default window opts and merge provided opts in
+  opts = Object.assign({
+    autoHideMenuBar: true,
+    title: 'InitialSync',
+    frame: false,
+    titleBarStyle: 'hidden',
+    show: true,
+    backgroundColor: '#EEE',
+    icon: './assets/icon.png'
+  }, opts)
+
   var win = new electron.BrowserWindow(opts)
   win.webContents.on('dom-ready', function () {
     win.webContents.executeJavaScript(`
@@ -12,7 +23,7 @@ module.exports = function window (path, opts) {
       document.documentElement.querySelector('head').appendChild(
         h('title', title)
       )
-      require(${JSON.stringify(path)})
+      require(${JSON.stringify(path)})(${JSON.stringify(config)})
     `)
   })
 

@@ -1,7 +1,7 @@
 const electron = require('electron')
 const join = require('path').join
 
-module.exports = function server (config) {
+module.exports = function server (config, plugins) {
   const opts = {
     connect: false,
     center: true,
@@ -20,7 +20,7 @@ module.exports = function server (config) {
   var win = new electron.BrowserWindow(opts)
 
   win.webContents.on('dom-ready', function () {
-    win.webContents.executeJavaScript(script(config))
+    win.webContents.executeJavaScript(script(config, plugins))
   })
 
   win.webContents.on('will-navigate', function (e, url) {
@@ -37,7 +37,7 @@ module.exports = function server (config) {
   return win
 }
 
-function script (config) {
+function script (config, plugins = []) {
   return `
     var electron = require('electron')
     var h = require('mutant/h')
@@ -51,10 +51,13 @@ function script (config) {
     // these are the Primary Server plugins
     var Server = require('ssb-server')
       .use(require('ssb-server/plugins/master'))
+      .use(require('ssb-server/plugins/local'))
       .use(require('ssb-gossip'))
       .use(require('ssb-replicate'))
-      // .use(require('ssb-invite')) // no pub invites at this step currently!
       .use(require('ssb-ebt'))
+      .use(require('ssb-friends')) // TODO seems to be needed to replicate !
+      // .use(require('ssb-invite')) // no pub invites at this step currently!
+      ${plugins.map(name => `.use(require('${name}'))`).join('')}
 
     var server = Server(${JSON.stringify(config)})
 
