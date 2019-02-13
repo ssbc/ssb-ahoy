@@ -1,7 +1,8 @@
 const Client = require('ssb-client')
-const { h, Value, Dict, computed, resolve } = require('mutant')
+const { h, Value, Dict, computed, resolve, watch } = require('mutant')
 const { ipcRenderer } = require('electron')
 const pull = require('pull-stream')
+const Abortable = require('pull-abortable')
 
 const Progress = require('./com/progress')
 const Follow = require('../lib/follow')
@@ -24,26 +25,22 @@ module.exports = function (config) {
         target: Value('?')
       }
     },
-    quiting: false
+    quiting: Value(false)
   }
 
   Client(config.keys, config, (err, server) => {
     if (err) return console.error(err)
+
     state.myId.set(server.id)
     state.server.set(server)
 
     function loop () {
       pollConnections(server, state)
       pollProgress(server, state)
-      if (!state.quiting) setTimeout(loop, 1e3)
+      if (!resolve(state.quiting)) setTimeout(loop, 1e3)
     }
     loop()
     streamHops(server, state)
-
-    ipcRenderer.on('server-closed', () => {
-      console.log('client: RECEIVED << server-closed, closing client')
-      server.close()
-    })
   })
 
   const App = h('App', [
@@ -96,8 +93,9 @@ module.exports = function (config) {
   document.body.appendChild(App)
 
   function closeApp () {
-    console.log('client: SENDING >> server-close')
-    state.quiting = true
+    console.log('ui: SENDING >> server-close')
+    state.quiting.set(true)
+    resolve(state.server).close(noop)
     ipcRenderer.send('server-close')
   }
 }
@@ -126,11 +124,20 @@ function pollProgress (server, state) {
 }
 
 function streamHops (server, state) {
+  const through = Abortable()
+
+  watch(state.quiting, q => {
+    if (q) through.abort()
+  })
+
   pull(
     server.friends.hopStream({ live: true, old: true }),
+    through,
     pull.drain(m => {
       const newState = Object.assign(resolve(state.hops), m)
       state.hops.set(newState)
     })
   )
 }
+
+function noop () {}

@@ -49,13 +49,10 @@ function Onboard () {
 
   state.windows.server = Server(config, plugins)
 
-  ipcMain.once('server-started', () => startUI(config))
-
-  function startUI (config) {
+  ipcMain.once('server-started', () => {
     console.log('starting UI!')
 
-    state.windows.ui = UI(Path.join(__dirname, 'views/index.js'), {
-    }, config)
+    state.windows.ui = UI(Path.join(__dirname, 'views/index.js'), {}, config)
 
     state.windows.ui.setSheetOffset(40)
     state.windows.ui.on('close', function (e) {
@@ -68,7 +65,7 @@ function Onboard () {
       state.windows.ui = null
       if (process.platform !== 'darwin') electron.app.quit()
     })
-  }
+  })
 }
 
 // TEMP? relay server close message out to the server rendered (process)
@@ -76,9 +73,13 @@ function Onboard () {
 //   https://github.com/electron/electron/blob/v2.0.16/docs/api/ipc-renderer.md#ipcrenderersendtowindowid-channel--arg1-arg2-
 
 ipcMain.on('server-close', function () {
-  console.log('main: RELAYING server-close')
+  console.log('main: RELAYING <<>> server-close')
   if (!state.windows.server) return
   state.windows.server.webContents.send('server-close')
+})
+
+ipcMain.on('server-closed', function () {
+  electron.app.quit()
 })
 
 ipcMain.on('log', function () { console.log(arguments) })
