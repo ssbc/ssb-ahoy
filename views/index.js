@@ -38,9 +38,11 @@ module.exports = function (config) {
     state.server.set(server)
 
     function loop () {
+      if (resolve(state.quitting)) return
+
       pollConnections(server, state)
       pollProgress(server, state)
-      if (!resolve(state.quitting)) setTimeout(loop, 1e3)
+      setTimeout(loop, 1e3)
     }
     loop()
     streamHops(server, state)
@@ -89,7 +91,7 @@ module.exports = function (config) {
       computed([state.progress.indexes.current, state.progress.indexes.target], Progress)
     ]),
     h('div', [
-      h('button', { 'ev-click': closeApp }, 'Close App')
+      h('button', { 'ev-click': closeApp }, 'LAUNCH!')
     ])
   ])
 

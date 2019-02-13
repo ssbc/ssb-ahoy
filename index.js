@@ -32,6 +32,11 @@ module.exports = function ahoy (config, plugins = [], next) {
       state.quitting = true
     })
 
+    // electron.app.on('will-quit', function (ev) {
+    //   ev.preventDefault()
+    //   // we want "next" to be able to be called I presume!
+    // })
+
     // allow inspecting of background process
     electron.ipcMain.on('open-background-devtools', function (ev, config) {
       if (state.windows.background) {
@@ -73,7 +78,8 @@ module.exports = function ahoy (config, plugins = [], next) {
   })
 
   ipcMain.on('server-closed', function () {
-    electron.app.quit()
+    state.windows.ui.hide() // TODO can we kill windows?
+    // electron.app.quit()
     next()
   })
 
