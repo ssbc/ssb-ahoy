@@ -4,6 +4,9 @@ const { ipcRenderer } = require('electron')
 const pull = require('pull-stream')
 const Abortable = require('pull-abortable')
 
+// polyfills
+require('setimmediate')
+
 const Progress = require('./com/progress')
 const Follow = require('../lib/follow')
 
@@ -25,7 +28,7 @@ module.exports = function (config) {
         target: Value('?')
       }
     },
-    quiting: Value(false)
+    quitting: Value(false)
   }
 
   Client(config.keys, config, (err, server) => {
@@ -37,7 +40,7 @@ module.exports = function (config) {
     function loop () {
       pollConnections(server, state)
       pollProgress(server, state)
-      if (!resolve(state.quiting)) setTimeout(loop, 1e3)
+      if (!resolve(state.quitting)) setTimeout(loop, 1e3)
     }
     loop()
     streamHops(server, state)
@@ -94,7 +97,7 @@ module.exports = function (config) {
 
   function closeApp () {
     console.log('ui: SENDING >> server-close')
-    state.quiting.set(true)
+    state.quitting.set(true)
     resolve(state.server).close(noop)
     ipcRenderer.send('server-close')
   }
@@ -126,7 +129,7 @@ function pollProgress (server, state) {
 function streamHops (server, state) {
   const through = Abortable()
 
-  watch(state.quiting, q => {
+  watch(state.quitting, q => {
     if (q) through.abort()
   })
 

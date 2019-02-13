@@ -4,7 +4,7 @@
   "description": "handle the initial sync as you join scuttlebutt for the first time",
   "main": "index.js",
   "scripts": {
-    "start": "electron index.js",
+    "start": "electron demo.js",
     "postinstall": "npm run rebuild",
     "rebuild": "cross-script npm rebuild --runtime=electron \"--target=$(electron -v)\" \"--abi=$(electron --abi)\" --disturl=https://atom.io/download/atom-shell",
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -23,6 +23,7 @@
     "mutant": "^3.22.1",
     "pull-abortable": "^4.1.1",
     "pull-stream": "^3.6.9",
+    "setimmediate": "^1.0.5",
     "ssb-about": "^2.0.0",
     "ssb-backlinks": "^0.7.3",
     "ssb-client": "^4.6.1",
