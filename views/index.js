@@ -3,6 +3,9 @@ const { h, Value, Dict, computed, resolve } = require('mutant')
 const { ipcRenderer } = require('electron')
 const pull = require('pull-stream')
 
+const Progress = require('./com/progress')
+const Follow = require('../lib/follow')
+
 module.exports = function (config) {
   if (!config) throw new Error('view requires a config to know how to connect to server')
   // TODO maybe just give the view a connection?
@@ -12,7 +15,7 @@ module.exports = function (config) {
     myId: Value(),
     connections: Dict({
       local: [],
-      global: []
+      web: []
     }),
     hops: Value({}),
     progress: {
@@ -23,6 +26,25 @@ module.exports = function (config) {
     },
     quiting: false
   }
+
+  Client(config.keys, config, (err, server) => {
+    if (err) return console.error(err)
+    state.myId.set(server.id)
+    state.server.set(server)
+
+    function loop () {
+      pollConnections(server, state)
+      pollProgress(server, state)
+      if (!state.quiting) setTimeout(loop, 1e3)
+    }
+    loop()
+    streamHops(server, state)
+
+    ipcRenderer.on('server-closed', () => {
+      console.log('client: RECEIVED << server-closed, closing client')
+      server.close()
+    })
+  })
 
   const App = h('App', [
     h('div', [
@@ -54,8 +76,8 @@ module.exports = function (config) {
             )
           ])
         })),
-        h('div', 'connections.global'),
-        h('ul', connections.global.map(peer => {
+        h('div', 'connections.web'),
+        h('ul', connections.web.map(peer => {
           return h('li', [
             h('pre', peer.key)
           ])
@@ -70,55 +92,8 @@ module.exports = function (config) {
       h('button', { 'ev-click': closeApp }, 'Close App')
     ])
   ])
+
   document.body.appendChild(App)
-
-  Client(config.keys, config, (err, server) => {
-    if (err) return console.error(err)
-    state.myId.set(server.id)
-    state.server.set(server)
-
-    function loop () {
-      pollPeers()
-      pollProgress()
-      if (!state.quiting) setTimeout(loop, 1e3)
-    }
-    loop()
-    streamHops()
-
-    function pollPeers () {
-      server.gossip.peers((err, data) => {
-        if (err) return console.error(err)
-
-        const locals = data.filter(d => d.source === 'local' && d.state === 'connected')
-        state.connections.put('local', locals)
-
-        const globals = data.filter(d => d.source !== 'local' && d.state === 'connected')
-        state.connections.put('global', globals)
-      })
-    }
-    function pollProgress () {
-      server.status((err, data) => {
-        if (err) return console.error(err)
-
-        state.progress.indexes.current.set(data.progress.indexes.current)
-        state.progress.indexes.target.set(data.progress.indexes.target)
-      })
-    }
-    function streamHops () {
-      pull(
-        server.friends.hopStream({ live: true, old: true }),
-        pull.drain(m => {
-          const newState = Object.assign(resolve(state.hops), m)
-          state.hops.set(newState)
-        })
-      )
-    }
-
-    ipcRenderer.on('server-closed', () => {
-      console.log('client: RECEIVED << server-closed, closing client')
-      server.close()
-    })
-  })
 
   function closeApp () {
     console.log('client: SENDING >> server-close')
@@ -127,48 +102,35 @@ module.exports = function (config) {
   }
 }
 
-function Follow (server) {
-  return function (feedId, cb = console.log) {
-    // TODO isFeed or a Schema
-    const follow = {
-      type: 'contact',
-      contact: feedId,
-      following: true
-    }
+// helpers
 
-    server.publish(follow, (err, msg) => {
-      if (err) return cb(err)
+function pollConnections (server, state) {
+  server.gossip.peers((err, data) => {
+    if (err) return console.error(err)
 
-      cb(null, msg)
-    })
-  }
+    const local = data.filter(d => d.source === 'local' && d.state === 'connected')
+    state.connections.put('local', local)
+
+    const web = data.filter(d => d.source !== 'local' && d.state === 'connected')
+    state.connections.put('web', web)
+  })
 }
 
-function Progress (current, target) {
-  if (isNaN(current) || isNaN(target)) return
-  if (current <= 0 || target <= 0) return
+function pollProgress (server, state) {
+  server.status((err, data) => {
+    if (err) return console.error(err)
 
-  const proportion = current / target
-  const totalMB = Math.floor(target / 1024 / 1024) // 1 step = 1 MB
-  const total = totalMB
-  const done = Math.floor(proportion * total)
+    state.progress.indexes.current.set(data.progress.indexes.current)
+    state.progress.indexes.target.set(data.progress.indexes.target)
+  })
+}
 
-  const DONE = '■'
-  const TODO = '□'
-  const WIDTH = 40
-
-  var bar = []
-
-  for (var i = 1; i <= total; i++) {
-    if (i <= done) bar.push(DONE)
-    else bar.push(TODO)
-
-    if (i % WIDTH === 0) bar.push('\n')
-    else bar.push(' ')
-  }
-
-  return h('div', [
-    h('pre', bar),
-    `${totalMB} MB of messages replicated (${Math.floor(proportion * 100)}% processed)`
-  ])
+function streamHops (server, state) {
+  pull(
+    server.friends.hopStream({ live: true, old: true }),
+    pull.drain(m => {
+      const newState = Object.assign(resolve(state.hops), m)
+      state.hops.set(newState)
+    })
+  )
 }
