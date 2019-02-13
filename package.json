@@ -1,5 +1,5 @@
 {
-  "name": "ssb-onboarding",
+  "name": "ssb-ahoy",
   "version": "0.0.1",
   "description": "handle the initial sync as you join scuttlebutt for the first time",
   "main": "index.js",
@@ -23,6 +23,7 @@
     "mutant": "^3.22.1",
     "pull-stream": "^3.6.9",
     "ssb-about": "^2.0.0",
+    "ssb-backlinks": "^0.7.3",
     "ssb-client": "^4.6.1",
     "ssb-config": "^3.2.3",
     "ssb-ebt": "^5.3.10",

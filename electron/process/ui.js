@@ -1,19 +1,33 @@
 const electron = require('electron')
 const join = require('path').join
+const WindowState = require('electron-window-state')
 
-module.exports = function window (path, opts, config) {
-  // TODO extract default window opts and merge provided opts in
+module.exports = function uiWindow (path, opts, config) {
+  var windowState = WindowState({
+    defaultWidth: 1024,
+    defaultHeight: 768
+  })
+
   opts = Object.assign({
-    autoHideMenuBar: true,
     title: 'InitialSync',
-    frame: false,
-    titleBarStyle: 'hidden',
     show: true,
-    backgroundColor: '#EEE',
-    icon: './assets/icon.png'
+
+    x: windowState.x,
+    y: windowState.y,
+    width: windowState.width,
+    height: windowState.height,
+    minWidth: 800,
+
+    autoHideMenuBar: true,
+    frame: true, // !process.env.FRAME,
+    // titleBarStyle: 'hidden',
+    backgroundColor: '#fff',
+    icon: '../../assets/icon.png' // TODO may need fixing
   }, opts)
 
   var win = new electron.BrowserWindow(opts)
+  windowState.manage(win)
+
   win.webContents.on('dom-ready', function () {
     win.webContents.executeJavaScript(`
       var electron = require('electron')
@@ -37,6 +51,6 @@ module.exports = function window (path, opts, config) {
     electron.shell.openExternal(url)
   })
 
-  win.loadURL('file://' + join(__dirname, 'assets', 'base.html'))
+  win.loadURL('file://' + join(__dirname, '../assets/base.html'))
   return win
 }

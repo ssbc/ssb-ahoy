@@ -1,20 +1,20 @@
 const electron = require('electron')
 const join = require('path').join
 
-module.exports = function server (config, plugins) {
+module.exports = function serverWindow (config, plugins) {
   const opts = {
+    title: 'initial sync server',
+    show: false,
     connect: false,
     center: true,
     fullscreen: false,
     fullscreenable: false,
-    height: 150,
     maximizable: false,
     minimizable: false,
     resizable: false,
-    show: false,
     skipTaskbar: true,
-    title: 'initial sync server',
     useContentSize: true,
+    height: 150,
     width: 150
   }
   var win = new electron.BrowserWindow(opts)
@@ -33,7 +33,7 @@ module.exports = function server (config, plugins) {
     electron.shell.openExternal(url)
   })
 
-  win.loadURL('file://' + join(__dirname, 'assets', 'base.html'))
+  win.loadURL('file://' + join(__dirname, '../assets/base.html'))
   return win
 }
 
