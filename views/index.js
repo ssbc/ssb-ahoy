@@ -50,7 +50,7 @@ module.exports = function (config) {
 
   const App = h('App', [
     h('div', [
-      'My ID: ',
+      'My FeedId: ',
       h('pre', state.myId)
     ]),
     computed([state.server, state.connections, state.hops], (server, connections, hops) => {
@@ -70,7 +70,7 @@ module.exports = function (config) {
               {
                 disabled: clicked,
                 'ev-click': () => {
-                  clicked.set(false)
+                  clicked.set(true)
                   Follow(server)(peer.key)
                 }
               },
