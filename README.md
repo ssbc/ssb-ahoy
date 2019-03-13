@@ -32,6 +32,8 @@ ahoy(config, plugins)
 
 `ssb-ahoy` closes with exit code `0` so will go on to run subsequent bash commands
 
+**NOTE**: if you set `AHOY=true` then `ssb-ahoy` will open up regardless of whether you're "set up"
+
 ## API
 
 ### `ahoy(config, plugins)`

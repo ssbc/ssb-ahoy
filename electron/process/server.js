@@ -20,7 +20,7 @@ module.exports = function serverWindow (config, plugins) {
   var win = new electron.BrowserWindow(opts)
 
   win.webContents.on('dom-ready', function () {
-    const skipSetUpCheck = false // toggle to force ssb-ahoy to display. TODO process.env this?
+    const skipSetUpCheck = false // toggle to force ssb-ahoy to display
     win.webContents.executeJavaScript(script(config, plugins, skipSetUpCheck))
   })
 
