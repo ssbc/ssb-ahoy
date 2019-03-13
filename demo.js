@@ -7,8 +7,4 @@ const config = Config('ahoy-test', {
 
 const plugins = ['ssb-private', 'ssb-backlinks', 'ssb-about', 'ssb-query', 'ssb-suggest']
 
-ahoy(config, plugins, () => {
-  console.log('Ready to set sail!')
-
-  // launch your main app in here!
-})
+ahoy(config, plugins)

@@ -9,6 +9,7 @@ require('setimmediate')
 
 const Progress = require('./com/progress')
 const Follow = require('../lib/follow')
+const log = require('../lib/log')
 
 module.exports = function (config) {
   if (!config) throw new Error('view requires a config to know how to connect to server')
@@ -98,7 +99,7 @@ module.exports = function (config) {
   document.body.appendChild(App)
 
   function closeApp () {
-    console.log('ui: SENDING >> server-close')
+    log('(ui) SENDING  >> server-close')
     state.quitting.set(true)
     resolve(state.server).close(noop)
     ipcRenderer.send('server-close')

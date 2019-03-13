@@ -38,11 +38,24 @@ module.exports = function serverWindow (config, plugins) {
 }
 
 function script (config, plugins = []) {
+  const requiredPlugins = [
+    'ssb-gossip',
+    'ssb-replicate',
+    'ssb-ebt',
+    'ssb-friends' // TODO seems to be needed to replicate !
+    // 'ssb-invite')) // no pub invites at this step currently!
+  ]
+
+  plugins = Array.from(
+    new Set([ ...requiredPlugins, ...plugins ])
+  )
+
   return `
     var electron = require('electron')
     var h = require('mutant/h')
     var fs = require('fs')
-
+    var log = require('../../lib/log')
+    
     electron.webFrame.setVisualZoomLevelLimits(1, 1)
     document.documentElement.querySelector('head').appendChild(
       h('title', 'InitialSync')
@@ -52,11 +65,6 @@ function script (config, plugins = []) {
     var Server = require('ssb-server')
       .use(require('ssb-server/plugins/master'))
       .use(require('ssb-server/plugins/local'))
-      .use(require('ssb-gossip'))
-      .use(require('ssb-replicate'))
-      .use(require('ssb-ebt'))
-      .use(require('ssb-friends')) // TODO seems to be needed to replicate !
-      // .use(require('ssb-invite')) // no pub invites at this step currently!
       ${plugins.map(name => `.use(require('${name}'))`).join('')}
 
     var server = Server(${JSON.stringify(config)})
@@ -72,7 +80,7 @@ function script (config, plugins = []) {
     electron.ipcRenderer.send('server-started')
 
     electron.ipcRenderer.once('server-close', () => {
-      console.log('server: RECEIVED << server-close')
+      log('(server) RECEIVED << server-close')
       server.close()
       electron.ipcRenderer.send('server-closed')
     })
