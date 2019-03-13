@@ -79,7 +79,8 @@ module.exports = function ahoy (config, plugins = []) {
   })
 
   ipcMain.on('server-closed', function () {
-    state.windows.ui.hide()
+    log('(main) RECEIVED << server-closed')
+    if (state.windows.ui) state.windows.ui.hide()
     if (state.exitCode === 0) electron.app.quit()
     else electron.app.exit(state.exitCode)
   })

@@ -20,7 +20,8 @@ module.exports = function serverWindow (config, plugins) {
   var win = new electron.BrowserWindow(opts)
 
   win.webContents.on('dom-ready', function () {
-    win.webContents.executeJavaScript(script(config, plugins))
+    const skipSetUpCheck = false // toggle to force ssb-ahoy to display. TODO process.env this?
+    win.webContents.executeJavaScript(script(config, plugins, skipSetUpCheck))
   })
 
   win.webContents.on('will-navigate', function (e, url) {
@@ -37,7 +38,7 @@ module.exports = function serverWindow (config, plugins) {
   return win
 }
 
-function script (config, plugins = []) {
+function script (config, plugins = [], skipSetUpCheck = false) {
   const requiredPlugins = [
     'ssb-gossip',
     'ssb-replicate',
@@ -54,6 +55,7 @@ function script (config, plugins = []) {
     var electron = require('electron')
     var h = require('mutant/h')
     var fs = require('fs')
+    var isSetUp = require('../../lib/is-set-up')
     var log = require('../../lib/log')
     
     electron.webFrame.setVisualZoomLevelLimits(1, 1)
@@ -77,7 +79,17 @@ function script (config, plugins = []) {
       JSON.stringify(manifest)
     )
 
-    electron.ipcRenderer.send('server-started')
+    if (${skipSetUpCheck}) electron.ipcRenderer.send('server-started')
+    else isSetUp(server)((err, _is) => {
+      if (err) throw err
+
+      if (_is) {
+        server.close()
+        electron.ipcRenderer.send('server-closed')
+      } else {
+        electron.ipcRenderer.send('server-started')
+      }
+    })
 
     electron.ipcRenderer.once('server-close', () => {
       log('(server) RECEIVED << server-close')

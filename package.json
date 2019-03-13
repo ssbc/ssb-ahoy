@@ -35,7 +35,7 @@
     "ssb-private": "^0.2.3",
     "ssb-query": "^2.3.0",
     "ssb-replicate": "^1.0.4",
-    "ssb-server": "^14.0.4",
+    "ssb-server": "^14.1.7",
     "ssb-suggest": "^1.0.3"
   }
 }
