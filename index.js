@@ -7,9 +7,10 @@ const Server = require('./electron/process/server')
 const UI = require('./electron/process/ui')
 const log = require('./lib/log')
 
-module.exports = function ahoy (config, plugins = []) {
+module.exports = function ahoy ({ config, plugins = [], appPath }) {
   if (typeof config !== 'object' || !config.keys) throw new Error('ssb-ahoy: expects valid server config')
   if (!Array.isArray(plugins)) throw new Error('ssb-ahoy: plugins must be an array')
+  if (plugins.length && typeof appPath !== 'string') throw new Error('ssb-ahoy: expects valid appPath')
 
   const state = {
     windows: {
@@ -21,7 +22,7 @@ module.exports = function ahoy (config, plugins = []) {
   }
 
   electron.app.on('ready', () => {
-    Menu() // NOT WORKING?!!
+    Menu()
 
     // could do multiple phases of sync in future
     // electron.ipcMain.once('primary-sync-completed', function (ev) {
@@ -49,7 +50,7 @@ module.exports = function ahoy (config, plugins = []) {
   function Onboard () {
     if (state.windows.server) return
 
-    state.windows.server = Server(config, plugins)
+    state.windows.server = Server({ config, plugins, appPath })
 
     // TODO start the UI early, have UI window show loading spinner
     // listen in the UI window for server-started to launch App

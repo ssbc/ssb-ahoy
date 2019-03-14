@@ -18,7 +18,7 @@ const config = Config('ssb', {
 })
 const plugins = ['ssb-private', 'ssb-backlinks', 'ssb-about', 'ssb-query', 'ssb-suggest']
 
-ahoy(config, plugins)
+ahoy({ config, plugins, appPath: __dirname })
 ```
 
 ```json
@@ -36,13 +36,13 @@ ahoy(config, plugins)
 
 ## API
 
-### `ahoy(config, plugins)`
+### `ahoy({ config, plugins, appPath })`
 
 - `config` - valid config for starting and connecting to an `ssb-server`, see [ssb-config](www.github.com/ssbc/ssb-config). Must include keys
-- `plugins` - an Array of the names of plugins you'd like to get ahoy to run indexes of for you
+- `plugins` - (optional) an Array of the names of plugins you'd like to get ahoy to run indexes of for you
+- `appPath` - (optional) the directory in which all the `plugins` have been installed. `ssb-ahoy` will go look there for the plugins to load!
 
-None of these arguments are optional.
-
+If a `plugins` array is provided, then `appPath` must also be provided.
 
 ## The voyage map
 

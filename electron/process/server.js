@@ -1,7 +1,7 @@
 const electron = require('electron')
 const join = require('path').join
 
-module.exports = function serverWindow (config, plugins) {
+module.exports = function serverWindow ({ config, plugins, appPath }) {
   const opts = {
     title: 'initial sync server',
     show: false,
@@ -19,9 +19,12 @@ module.exports = function serverWindow (config, plugins) {
   }
   var win = new electron.BrowserWindow(opts)
 
-  win.webContents.on('dom-ready', function () {
+  win.webContents.on('dom-ready', function (ev) {
     const skipSetUpCheck = false // toggle to force ssb-ahoy to display
-    win.webContents.executeJavaScript(script(config, plugins, skipSetUpCheck))
+
+    win.webContents.executeJavaScript(
+      script({ config, plugins, appPath, skipSetUpCheck })
+    )
   })
 
   win.webContents.on('will-navigate', function (e, url) {
@@ -38,18 +41,20 @@ module.exports = function serverWindow (config, plugins) {
   return win
 }
 
-function script (config, plugins = [], skipSetUpCheck = false) {
-  const requiredPlugins = [
+function script ({ config, plugins = [], appPath, skipSetUpCheck = false }) {
+  const _plugins = [
+    'ssb-server/plugins/master',
+    'ssb-server/plugins/local',
     'ssb-gossip',
     'ssb-replicate',
-    'ssb-ebt',
+    'ssb-ebt', // NOTE my be semi broken
     'ssb-friends' // TODO seems to be needed to replicate !
     // 'ssb-invite')) // no pub invites at this step currently!
   ]
-
-  plugins = Array.from(
-    new Set([ ...requiredPlugins, ...plugins ])
-  )
+  plugins.forEach(plugin => {
+    if (_plugins.includes(plugin)) return
+    _plugins.push(`${appPath}/node_modules/${plugin}`)
+  })
 
   return `
     var electron = require('electron')
@@ -65,9 +70,7 @@ function script (config, plugins = [], skipSetUpCheck = false) {
 
     // these are the Primary Server plugins
     var Server = require('ssb-server')
-      .use(require('ssb-server/plugins/master'))
-      .use(require('ssb-server/plugins/local'))
-      ${plugins.map(name => `.use(require('${name}'))`).join('')}
+      ${_plugins.map(name => `.use(require('${name}'))`).join('')}
 
     var server = Server(${JSON.stringify(config)})
 
