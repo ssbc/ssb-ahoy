@@ -47,8 +47,8 @@ function script ({ config, plugins = [], appPath, skipSetUpCheck = false }) {
     'ssb-server/plugins/local',
     'ssb-gossip',
     'ssb-replicate',
-    'ssb-ebt', // NOTE my be semi broken
-    'ssb-friends' // TODO seems to be needed to replicate !
+    'ssb-ebt', // NOTE may be broken ? (sometimes stalls out replicating)
+    'ssb-friends' // NOTE makes replication calls at the moment
     // 'ssb-invite')) // no pub invites at this step currently!
   ]
   plugins.forEach(plugin => {
@@ -60,44 +60,47 @@ function script ({ config, plugins = [], appPath, skipSetUpCheck = false }) {
     var electron = require('electron')
     var h = require('mutant/h')
     var fs = require('fs')
-    var isSetUp = require('../../lib/is-set-up')
+    var checkSetUp = require('../../lib/is-set-up')
     var log = require('../../lib/log')
+    var config = ${JSON.stringify(config)}
+
+    var server
     
     electron.webFrame.setVisualZoomLevelLimits(1, 1)
     document.documentElement.querySelector('head').appendChild(
       h('title', 'InitialSync')
     )
 
-    // these are the Primary Server plugins
-    var Server = require('ssb-server')
-      ${_plugins.map(name => `.use(require('${name}'))`).join('')}
+    if (${skipSetUpCheck}) startAhoyServer()
+    else {
+      checkSetUp(config, (err, isSetUp) => {
+        if (err) throw err
 
-    var server = Server(${JSON.stringify(config)})
+        if (isSetUp) electron.ipcRenderer.send('server-closed')
+        // NOTE the server is already closed, but this signals to quit the electron app
+        else startAhoyServer()
+      })
+    }
 
-    var manifest = server.getManifest()
-    // electron.ipcRenderer.send('log', '${config.path}', manifest)
-
-    fs.writeFileSync(
-      '${join(config.path, 'manifest.json')}',
-      JSON.stringify(manifest)
-    )
-
-    if (${skipSetUpCheck}) electron.ipcRenderer.send('server-started')
-    else isSetUp(server)((err, _is) => {
-      if (err) throw err
-
-      if (_is) {
-        server.close()
-        electron.ipcRenderer.send('server-closed')
-      } else {
-        electron.ipcRenderer.send('server-started')
-      }
-    })
 
     electron.ipcRenderer.once('server-close', () => {
       log('(server) RECEIVED << server-close')
-      server.close()
-      electron.ipcRenderer.send('server-closed')
+      server.close(() => electron.ipcRenderer.send('server-closed'))
     })
+
+    function startAhoyServer () {
+      var Server = require('ssb-server')
+        ${_plugins.map(name => `.use(require('${name}'))`).join('')}
+
+      server = Server(config)
+
+      fs.writeFileSync(
+        '${join(config.path, 'manifest.json')}',
+        JSON.stringify(server.getManifest())
+      )
+
+      electron.ipcRenderer.send('server-started')
+    }
+
   `
 }

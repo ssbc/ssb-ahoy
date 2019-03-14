@@ -3,6 +3,7 @@ const { h, Value, Dict, computed, resolve, watch } = require('mutant')
 const { ipcRenderer } = require('electron')
 const pull = require('pull-stream')
 const Abortable = require('pull-abortable')
+const pickBy = require('lodash.pickby')
 
 // polyfills
 require('setimmediate')
@@ -18,9 +19,9 @@ module.exports = function (config) {
   const state = {
     server: Value(),
     myId: Value(),
-    connections: Dict({
+    peers: Dict({
       local: [],
-      web: []
+      global: []
     }),
     hops: Value({}),
     progress: {
@@ -41,8 +42,7 @@ module.exports = function (config) {
     function loop () {
       if (resolve(state.quitting)) return
 
-      pollConnections(server, state)
-      pollProgress(server, state)
+      pollStatus(server, state)
       setTimeout(loop, 1e3)
     }
     loop()
@@ -54,14 +54,18 @@ module.exports = function (config) {
       'My FeedId: ',
       h('pre', state.myId)
     ]),
-    computed([state.server, state.connections, state.hops], (server, connections, hops) => {
+    computed([state.server, state.peers, state.hops], (server, peers, hops) => {
       if (!server) return 'Loading...'
 
       return h('div', [
-        h('div', 'connections.local'),
-        h('ul', connections.local.map(peer => {
+        h('div', 'peers.local'),
+        h('ul', peers.local.map(peer => {
           if (hops[peer.key] === 1) {
-            return h('li', [ h('pre', peer.key), ' Following' ])
+            return h('li', [
+              h('pre', peer.key),
+              ' Following ',
+              peer.state
+            ])
           }
 
           const clicked = Value(false)
@@ -76,13 +80,17 @@ module.exports = function (config) {
                 }
               },
               'follow'
-            )
+            ),
+            ' ',
+            peer.state
           ])
         })),
-        h('div', 'connections.web'),
-        h('ul', connections.web.map(peer => {
+        h('div', 'peers.web'),
+        h('ul', peers.global.map(peer => {
           return h('li', [
-            h('pre', peer.key)
+            h('pre', peer.key),
+            ' ',
+            peer.state
           ])
         }))
       ])
@@ -107,25 +115,45 @@ module.exports = function (config) {
 }
 
 // helpers
+// TODO extract
 
-function pollConnections (server, state) {
-  server.gossip.peers((err, data) => {
+// function pollConnections (server, state) {
+//   server.gossip.peers((err, data) => {
+//     if (err) return console.error(err)
+
+//     const local = data.filter(d => d.source === 'local' && d.state === 'connected')
+//     state.peers.put('local', local)
+
+//     const global = data.filter(d => d.source !== 'local' && d.state === 'connected')
+//     state.peers.put('global', global)
+//   })
+// }
+
+function pollStatus (server, state) {
+  server.status((err, data) => {
     if (err) return console.error(err)
+    const { progress, local: localPeers = {}, gossip = {} } = data
 
-    const local = data.filter(d => d.source === 'local' && d.state === 'connected')
-    state.connections.put('local', local)
+    state.progress.indexes.current.set(progress.indexes.current)
+    state.progress.indexes.target.set(progress.indexes.target)
 
-    const web = data.filter(d => d.source !== 'local' && d.state === 'connected')
-    state.connections.put('web', web)
+    // gather all local connected (connected / not connected)
+    const local = pickBy(gossip, peer => peer.source === 'local')
+    Object.keys(localPeers).forEach(feedId => {
+      if (local[feedId]) return
+      local[feedId] = Object.assign({ state: 'not connected' }, local[feedId])
+    })
+    state.peers.put('local', toPeerArray(local))
+
+    // gather all global connections
+    const global = pickBy(gossip, peer => peer.source !== 'local' && peer.state === 'connected')
+    state.peers.put('global', toPeerArray(global))
   })
 }
 
-function pollProgress (server, state) {
-  server.status((err, data) => {
-    if (err) return console.error(err)
-
-    state.progress.indexes.current.set(data.progress.indexes.current)
-    state.progress.indexes.target.set(data.progress.indexes.target)
+function toPeerArray (obj) {
+  return Object.keys(obj).map(key => {
+    return Object.assign({ key: key }, obj[key])
   })
 }
 
