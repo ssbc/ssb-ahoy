@@ -14,7 +14,6 @@ const log = require('../lib/log')
 
 module.exports = function (config) {
   if (!config) throw new Error('view requires a config to know how to connect to server')
-  // TODO maybe just give the view a connection?
 
   const state = {
     server: Value(),
@@ -33,6 +32,8 @@ module.exports = function (config) {
     quitting: Value(false)
   }
 
+  // TODO isolate connection + state from view
+  // TODO maybe just give the view a connection?
   Client(config.keys, config, (err, server) => {
     if (err) return console.error(err)
 
@@ -100,17 +101,18 @@ module.exports = function (config) {
       computed([state.progress.indexes.current, state.progress.indexes.target], Progress)
     ]),
     h('div', [
-      h('button', { 'ev-click': closeApp }, 'LAUNCH!')
+      h('button', { 'ev-click': NextStep }, 'LAUNCH!')
     ])
   ])
 
   document.body.appendChild(App)
 
-  function closeApp () {
-    log('(ui) SENDING  >> server-close')
+  function NextStep () {
     state.quitting.set(true)
-    resolve(state.server).close(noop)
-    ipcRenderer.send('server-close')
+    resolve(state.server).close(() => {
+      log('(ui) SENDING  >> ahoy:step')
+      ipcRenderer.send('ahoy:step')
+    })
   }
 }
 
@@ -150,6 +152,7 @@ function pollStatus (server, state) {
     state.peers.put('global', toPeerArray(global))
   })
 }
+// TODO extract as pollConnections, and make callback based
 
 function toPeerArray (obj) {
   return Object.keys(obj).map(key => {
@@ -173,5 +176,4 @@ function streamHops (server, state) {
     })
   )
 }
-
-function noop () {}
+// TODO extract this?

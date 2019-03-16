@@ -2,47 +2,55 @@
 
 An onboarding mini-app - gets you all set up, and caught up on the gossip before you set out on your adventure
 
-If you want to take this repo for a spin, run `npm start` and you'll get the mini-app by itself, and an identity set up in `~/.ahoy-test`.
 You currently need to be on the same network as another peer (this version has to start with local peer recplication)
 
 ## Example
 
 ```js
-// ahoy.js
-
+// index.js
 const ahoy = require('ssb-ahoy')
 const Config = require('ssb-config/inject')
 
-const config = Config('ssb', {
-  friends: { hops: 2 }
-})
-const plugins = ['ssb-private', 'ssb-backlinks', 'ssb-about', 'ssb-query', 'ssb-suggest']
+const config = Config('ssb-test-account')
+const plugins = [
+  'ssb-private',
+  'ssb-backlinks',
+  'ssb-about',
+  'ssb-query',
+  'ssb-suggest'
+]
 
-ahoy({ config, plugins, appPath: __dirname })
+ahoy({
+  config,
+  plugins,
+  pluginsDir: join(__dirname, 'node_modules'),
+  uiPath: join(__dirname, 'app.js'), // entry point to your main app
+  onReady: () => {
+    console.log('welcome aboard')
+  }
+})
 ```
 
 ```json
 // package.json
 {
   "scripts": {
-    "start": "electron ahoy.js && electron index.js"
+    "start": "electron index.js"
   }
 }
 ```
-
-`ssb-ahoy` closes with exit code `0` so will go on to run subsequent bash commands
 
 **NOTE**: if you set `AHOY=true` then `ssb-ahoy` will open up regardless of whether you're "set up"
 
 ## API
 
-### `ahoy({ config, plugins, appPath })`
+### `ahoy({ config, plugins, pluginsDir, uiPath, onReady })`
 
 - `config` - valid config for starting and connecting to an `ssb-server`, see [ssb-config](www.github.com/ssbc/ssb-config). Must include keys
 - `plugins` - (optional) an Array of the names of plugins you'd like to get ahoy to run indexes of for you
-- `appPath` - (optional) the directory in which all the `plugins` have been installed. `ssb-ahoy` will go look there for the plugins to load!
-
-If a `plugins` array is provided, then `appPath` must also be provided.
+- `pluginsDir` - (only needed if plugins provided) the directory in which all the `plugins` have been installed. `ssb-ahoy` will go look there for the plugins to load!
+- `uiPath` - string which points to the ui entry point of your app
+- `onReady` - a callback which is run after ahoy hands over to your main app
 
 ## The voyage map
 
@@ -51,7 +59,7 @@ We can't seem to easily quit out of it and launch pour own e.g. patchbay, using 
 Currently just hacking it so that `app.quit()` is not called, and patchbay uses ahoy's electron ...
 
 - [ ] skip ssb-ahoy if already "set up"
-  - [x] check I have a name
+  - [ ] check I have a name
   - [ ] check I have an image
   - [ ] check I'm following people / have content?
   - [ ] check I'm being replicated (later after peer-invites)
@@ -66,4 +74,4 @@ Bonus:
 - [ ] names next to the local peers keys
   - note that `lib/get-name` only looks for more recent self-set name. any more requires indexes
 - [ ] only provide (next) button if know (based on `ssb-ebt` data) have all the data for all the feeds
-- [ ] split the replication into multiple stages?
+- [x] split the replication into multiple stages

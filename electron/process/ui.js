@@ -2,7 +2,7 @@ const electron = require('electron')
 const join = require('path').join
 const WindowState = require('electron-window-state')
 
-module.exports = function uiWindow (path, opts, config) {
+module.exports = function uiWindow (uiPath, opts, config) {
   var windowState = WindowState({
     defaultWidth: 1024,
     defaultHeight: 768
@@ -37,7 +37,7 @@ module.exports = function uiWindow (path, opts, config) {
       document.documentElement.querySelector('head').appendChild(
         h('title', title)
       )
-      require(${JSON.stringify(path)})(${JSON.stringify(config)})
+      require(${JSON.stringify(uiPath)})(${JSON.stringify(config)})
     `)
   })
 

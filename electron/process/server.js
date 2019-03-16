@@ -1,7 +1,7 @@
 const electron = require('electron')
 const join = require('path').join
 
-module.exports = function serverWindow ({ config, plugins, appPath }) {
+module.exports = function serverWindow ({ config, plugins }) {
   const opts = {
     title: 'initial sync server',
     show: false,
@@ -20,10 +20,8 @@ module.exports = function serverWindow ({ config, plugins, appPath }) {
   var win = new electron.BrowserWindow(opts)
 
   win.webContents.on('dom-ready', function (ev) {
-    const skipSetUpCheck = false // toggle to force ssb-ahoy to display
-
     win.webContents.executeJavaScript(
-      script({ config, plugins, appPath, skipSetUpCheck })
+      script({ config, plugins })
     )
   })
 
@@ -41,26 +39,11 @@ module.exports = function serverWindow ({ config, plugins, appPath }) {
   return win
 }
 
-function script ({ config, plugins = [], appPath, skipSetUpCheck = false }) {
-  const _plugins = [
-    'ssb-server/plugins/master',
-    'ssb-server/plugins/local',
-    'ssb-gossip',
-    'ssb-replicate',
-    'ssb-ebt', // NOTE may be broken ? (sometimes stalls out replicating)
-    'ssb-friends' // NOTE makes replication calls at the moment
-    // 'ssb-invite')) // no pub invites at this step currently!
-  ]
-  plugins.forEach(plugin => {
-    if (_plugins.includes(plugin)) return
-    _plugins.push(`${appPath}/node_modules/${plugin}`)
-  })
-
+function script ({ config, plugins = [] }) {
   return `
     var electron = require('electron')
     var h = require('mutant/h')
     var fs = require('fs')
-    var checkSetUp = require('../../lib/is-set-up')
     var log = require('../../lib/log')
     var config = ${JSON.stringify(config)}
 
@@ -71,17 +54,7 @@ function script ({ config, plugins = [], appPath, skipSetUpCheck = false }) {
       h('title', 'InitialSync')
     )
 
-    if (${skipSetUpCheck}) startAhoyServer()
-    else {
-      checkSetUp(config, (err, isSetUp) => {
-        if (err) throw err
-
-        if (isSetUp) electron.ipcRenderer.send('server-closed')
-        // NOTE the server is already closed, but this signals to quit the electron app
-        else startAhoyServer()
-      })
-    }
-
+    startAhoyServer()
 
     electron.ipcRenderer.once('server-close', () => {
       log('(server) RECEIVED << server-close')
@@ -89,8 +62,8 @@ function script ({ config, plugins = [], appPath, skipSetUpCheck = false }) {
     })
 
     function startAhoyServer () {
-      var Server = require('ssb-server')
-        ${_plugins.map(name => `.use(require('${name}'))`).join('')}
+      var Server = require('ssb-server').createSsbServer()
+        ${plugins.map(name => `.use(require('${name}'))`).join('')}
 
       server = Server(config)
 
@@ -101,6 +74,5 @@ function script ({ config, plugins = [], appPath, skipSetUpCheck = false }) {
 
       electron.ipcRenderer.send('server-started')
     }
-
   `
 }
