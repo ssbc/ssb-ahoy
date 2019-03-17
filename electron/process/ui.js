@@ -9,7 +9,7 @@ module.exports = function uiWindow (uiPath, opts, config) {
   })
 
   opts = Object.assign({
-    title: 'InitialSync',
+    title: 'scuttlebutt ahoy!',
     show: true,
 
     x: windowState.x,
@@ -33,7 +33,7 @@ module.exports = function uiWindow (uiPath, opts, config) {
       var electron = require('electron')
       var h = require('mutant/h')
       electron.webFrame.setVisualZoomLevelLimits(1, 1)
-      var title = ${JSON.stringify(opts.title || 'InitialSync')}
+      var title = ${JSON.stringify(opts.title || 'scuttlebutt ahoy!')}
       document.documentElement.querySelector('head').appendChild(
         h('title', title)
       )

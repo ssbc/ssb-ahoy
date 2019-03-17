@@ -16,7 +16,7 @@
   "license": "AGPL-3.0",
   "dependencies": {
     "cross-script": "^1.0.5",
-    "electron": "^2.0.16",
+    "electron": "^2.0.18",
     "electron-default-menu": "^1.0.1",
     "electron-window-state": "^5.0.3",
     "lodash.pickby": "^4.6.0",
@@ -30,7 +30,6 @@
     "ssb-friends": "^3.1.13",
     "ssb-gossip": "^1.0.4",
     "ssb-invite": "^2.0.3",
-    "ssb-replicate": "^1.0.4",
-    "ssb-server": "^14.1.9"
+    "ssb-replicate": "^1.0.4"
   }
 }

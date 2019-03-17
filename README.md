@@ -21,9 +21,10 @@ const plugins = [
 ]
 
 ahoy({
+  title: 'Patchbay',
   config,
   plugins,
-  pluginsDir: join(__dirname, 'node_modules'),
+  modulesDir: join(__dirname, 'node_modules'),
   uiPath: join(__dirname, 'app.js'), // entry point to your main app
   onReady: () => {
     console.log('welcome aboard')
@@ -44,11 +45,12 @@ ahoy({
 
 ## API
 
-### `ahoy({ config, plugins, pluginsDir, uiPath, onReady })`
+### `ahoy({ title, config, plugins, modulesDir, uiPath, onReady })`
 
+- `title` - (optional) the title to be attached to the visible window
 - `config` - valid config for starting and connecting to an `ssb-server`, see [ssb-config](www.github.com/ssbc/ssb-config). Must include keys
 - `plugins` - (optional) an Array of the names of plugins you'd like to get ahoy to run indexes of for you
-- `pluginsDir` - (only needed if plugins provided) the directory in which all the `plugins` have been installed. `ssb-ahoy` will go look there for the plugins to load!
+- `modulesDir` - (only needed if plugins provided) the directory in which all the `plugins` have been installed. `ssb-ahoy` will go look there for the plugins to load!
 - `uiPath` - string which points to the ui entry point of your app
 - `onReady` - a callback which is run after ahoy hands over to your main app
 
@@ -59,7 +61,7 @@ We can't seem to easily quit out of it and launch pour own e.g. patchbay, using 
 Currently just hacking it so that `app.quit()` is not called, and patchbay uses ahoy's electron ...
 
 - [ ] skip ssb-ahoy if already "set up"
-  - [ ] check I have a name
+  - [x] check I have a name
   - [ ] check I have an image
   - [ ] check I'm following people / have content?
   - [ ] check I'm being replicated (later after peer-invites)

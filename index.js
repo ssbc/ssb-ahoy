@@ -5,43 +5,45 @@ const { join } = require('path')
 const Menu = require('./electron/menu')
 const Server = require('./electron/process/server')
 const UI = require('./electron/process/ui')
+const Plugins = require('./lib/build-plugins')
+const MinimalPlugins = require('./plugins-minimal')
+const CheckSetUp = require('./lib/is-set-up')
 const log = require('./lib/log')
 
 module.exports = function ahoy (opts) {
   const {
+    title,
     config,
     plugins = [],
-    pluginsDir,
+    modulesDir,
     uiPath,
     onReady = () => {}
   } = opts
 
   if (typeof config !== 'object' || !config.keys) throw Error('ssb-ahoy: expects valid server config')
   if (!Array.isArray(plugins)) throw Error('ssb-ahoy: plugins must be an array')
-  if (plugins.length && typeof pluginsDir !== 'string') throw Error('ssb-ahoy: expects valid pluginsDir')
+  if (plugins.length && typeof modulesDir !== 'string') throw Error('ssb-ahoy: expects valid modulesDir')
   if (typeof uiPath !== 'string') throw Error('ssb-ahoy: expects valid uiPath')
   if (typeof onReady !== 'function') throw Error('ssb-ahoy: expects valid onReady function')
 
-  const minimalPlugins = [
-    'ssb-server/plugins/master',
-    'ssb-server/plugins/logging',
-    'ssb-server/plugins/unix-socket',
-    'ssb-server/plugins/no-auth',
-    // 'ssb-server/plugins/onion',
-    'ssb-server/plugins/local',
-
-    'ssb-gossip',
-    'ssb-replicate',
-    'ssb-ebt',
-    'ssb-friends',
-    'ssb-invite'
-  ]
   const state = {
     steps: [
-      // TODO // a "check setup step?"
-      { config, plugins: minimalPlugins, uiPath: join(__dirname, 'views/index.js') },
-      { config, plugins: buildPlugins({ plugins, pluginsDir }), uiPath: join(__dirname, 'views/index.js') },
-      { config, plugins: buildPlugins({ plugins, pluginsDir }), uiPath }
+      { // focus of log replication
+        config,
+        plugins: MinimalPlugins(modulesDir),
+        uiPath: join(__dirname, 'views/index.js') // TODO auto-progress?
+      },
+      { // focus on indexing
+        config,
+        plugins: Plugins({ plugins, modulesDir }),
+        uiPath: join(__dirname, 'views/index.js') // TODO show progress differently
+      },
+      { // start user app
+        title,
+        config,
+        plugins: Plugins({ plugins, modulesDir }),
+        uiPath
+      }
     ],
     step: -1,
     windows: {
@@ -65,36 +67,47 @@ module.exports = function ahoy (opts) {
       }
     })
 
-    step()
+    CheckSetUp(config, modulesDir, (err, isSetUp) => {
+      if (err) throw err
+
+      if (isSetUp) state.step = state.steps.length - 2 // step before final step
+      Start()
+    })
   })
+
+  function Start () {
+    step()
+    ipcMain.on('ahoy:step', step)
+    electron.app.on('activate', function (e) {
+      // reopen the app when dock icon clicked on macOS
+      if (state.windows.ui) state.windows.ui.show()
+    })
+
+    ipcMain.on('server-close', function () {
+      log('(main) RELAYING <> server-close')
+      if (state.windows.server) state.windows.server.webContents.send('server-close')
+    })
+
+    ipcMain.on('log', log)
+  }
 
   function step () {
     state.step++
-
     if (!state.steps[state.step]) throw Error("ahoy! you're sailing off the map!")
 
-    // close connection to server
-    // - done on client side?
-
-    // close the server
-    if (!state.windows.server) {
-      StartNextStep()
-    } else {
+    if (!state.windows.server) StartNextStep()
+    else {
       clearServer(() => {
-        // scoop out the contents of the UI
-        // (later) close UI
         clearUI()
 
-        // start new server, then start new UI
-        setTimeout(StartNextStep, 500)
+        console.log('# ---------------')
+        StartNextStep() // start new server, then start new UI
       })
     }
   }
-  ipcMain.on('ahoy:step', step)
 
   function clearServer (cb) {
     state.windows.server.webContents.send('server-close')
-
     ipcMain.once('server-closed', () => {
       log('(main) RECEIVED << server-closed')
 
@@ -107,76 +120,40 @@ module.exports = function ahoy (opts) {
 
     log('(main) clearing UI')
     // state.windows.ui.webContents.executeJavascript("console.log('scoop it out!')")
-    // state.windows.ui.close()
-    state.windows.ui.hide()
+    state.windows.ui.close()
     state.windows.ui = null
   }
 
   function StartNextStep () {
     StartServer()
     ipcMain.once('server-started', StartUI)
-    // ipcMain.on('server-started', StartUI) // TODO check where this listener should be
   }
 
   function StartServer () {
     if (state.windows.server) throw Error('ahoy: you can only have one server at a time!')
 
     const { config, plugins } = state.steps[state.step]
-
-    state.windows.server = Server({ config, plugins })
+    state.windows.server = Server({ config, plugins, modulesDir })
   }
 
   function StartUI () {
-    console.log('STARTING UI')
-    const { uiPath, config } = state.steps[state.step]
+    const { uiPath, title, config } = state.steps[state.step]
 
-    state.windows.ui = UI(uiPath, {}, config)
+    const ui = UI(uiPath, { title }, config)
+    ui.setSheetOffset(40)
 
-    state.windows.ui.setSheetOffset(40)
-    state.windows.ui.on('close', function (e) {
-      if (process.platform !== 'darwin') return
-      if (state.quitting) return
-
-      e.preventDefault()
-      state.windows.ui.hide()
+    ui.on('close', function (e) {
+      if (!state.quitting && process.platform === 'darwin') {
+        e.preventDefault()
+        ui.hide()
+      }
     })
-    state.windows.ui.on('closed', function () {
+    ui.on('closed', function () {
       state.windows.ui = null
-      if (process.platform !== 'darwin') electron.app.quit()
+      if (state.quitting && process.platform !== 'darwin') electron.app.quit()
     })
+
+    state.windows.ui = ui
+    if (state.step === state.steps.length - 1) onReady({ windows: state.windows })
   }
-
-  ipcMain.on('server-close', function () {
-    log('(main) RELAYING <> server-close')
-    if (state.windows.server) state.windows.server.webContents.send('server-close')
-  })
-
-  // ipcMain.on('server-closed', function () {
-  //   log('(main) RECEIVED << server-closed')
-  //   if (state.windows.ui) state.windows.ui.hide()
-
-  //   electron.app.quit()
-  // })
-
-  ipcMain.on('log', log)
-}
-
-function buildPlugins ({ plugins, pluginsDir }) {
-  var _plugins = [
-    'ssb-server/plugins/master',
-    'ssb-server/plugins/local',
-    'ssb-server/plugins/unix-socket', // in case config includes sockets
-    'ssb-server/plugins/no-auth', // in case config includes sockets
-    'ssb-gossip',
-    'ssb-replicate',
-    'ssb-ebt', // NOTE may be broken ? (sometimes stalls out replicating)
-    'ssb-friends' // NOTE makes replication calls at the moment
-    // 'ssb-invite')) // no pub invites at this step currently!
-  ]
-  plugins.forEach(plugin => {
-    if (_plugins.includes(plugin)) return
-    _plugins.push(`${pluginsDir}/${plugin}`)
-  })
-
-  return _plugins
 }
