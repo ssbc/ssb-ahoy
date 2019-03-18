@@ -1,7 +1,7 @@
 const electron = require('electron')
 const join = require('path').join
 
-module.exports = function serverWindow ({ config, plugins, modulesDir }) {
+module.exports = function serverWindow ({ config, plugins, appDir }) {
   const opts = {
     title: 'initial sync server',
     show: false,
@@ -21,7 +21,7 @@ module.exports = function serverWindow ({ config, plugins, modulesDir }) {
 
   win.webContents.on('dom-ready', function (ev) {
     win.webContents.executeJavaScript(
-      script({ config, plugins, modulesDir })
+      script({ config, plugins, appDir })
     )
   })
 
@@ -39,12 +39,12 @@ module.exports = function serverWindow ({ config, plugins, modulesDir }) {
   return win
 }
 
-function script ({ config, plugins = [], modulesDir }) {
+function script ({ config, plugins = [], appDir }) {
   return `
     var electron = require('electron')
     var h = require('mutant/h')
     var fs = require('fs')
-    var { join } = require('path')
+    var { join, resolve } = require('path')
     var log = require('../../lib/log')
     var config = ${JSON.stringify(config)}
 
@@ -64,7 +64,7 @@ function script ({ config, plugins = [], modulesDir }) {
     })
 
     function startAhoyServer () {
-      var Server = require(join('${modulesDir}', 'ssb-server')).createSsbServer()
+      var Server = require(join('${appDir}', 'node_modules/ssb-server')).createSsbServer()
         ${plugins.map(name => `.use(require('${name}'))`).join('')}
 
       server = Server(config)

@@ -16,14 +16,14 @@ module.exports = function ahoy (opts) {
     title,
     config,
     plugins = [],
-    modulesDir,
+    appDir = '../../../../node_modules',
     uiPath,
     onReady = () => {}
   } = opts
 
   if (typeof config !== 'object' || !config.keys) throw Error('ssb-ahoy: expects valid server config')
   if (!Array.isArray(plugins)) throw Error('ssb-ahoy: plugins must be an array')
-  if (plugins.length && typeof modulesDir !== 'string') throw Error('ssb-ahoy: expects valid modulesDir')
+  if (plugins.length && typeof appDir !== 'string') throw Error('ssb-ahoy: expects valid appDir')
   if (typeof uiPath !== 'string') throw Error('ssb-ahoy: expects valid uiPath')
   if (typeof onReady !== 'function') throw Error('ssb-ahoy: expects valid onReady function')
 
@@ -33,19 +33,19 @@ module.exports = function ahoy (opts) {
     steps: [
       { // focus of log replication
         config: configLocal,
-        plugins: MinimalPlugins(modulesDir),
-        uiPath: join(__dirname, 'views/replication/index.js') // TODO auto-progress?
+        plugins: MinimalPlugins(appDir),
+        uiPath: './views/replication/index.js' // TODO auto-progress?
       },
       { // focus on indexing
         config: configLocal,
-        plugins: Plugins({ plugins, modulesDir }),
-        uiPath: join(__dirname, 'views/indexing/index.js') // TODO show progress differently
+        plugins: Plugins({ plugins, appDir }),
+        uiPath: './views/indexing/index.js'
       },
       { // start user app
         title,
         config,
-        plugins: Plugins({ plugins, modulesDir }),
-        uiPath
+        plugins: Plugins({ plugins, appDir }),
+        uiPath: join(appDir, uiPath)
       }
     ],
     step: -1,

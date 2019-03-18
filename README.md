@@ -24,8 +24,7 @@ ahoy({
   title: 'Patchbay',
   config,
   plugins,
-  modulesDir: join(__dirname, 'node_modules'),
-  uiPath: join(__dirname, 'app.js'), // entry point to your main app
+  uiPath: './app.js', // entry point to your main app
   onReady: () => {
     console.log('welcome aboard')
   }
@@ -50,9 +49,9 @@ ahoy({
 - `title` - (optional) the title to be attached to the visible window
 - `config` - valid config for starting and connecting to an `ssb-server`, see [ssb-config](www.github.com/ssbc/ssb-config). Must include keys
 - `plugins` - (optional) an Array of the names of plugins you'd like to get ahoy to run indexes of for you
-- `modulesDir` - (only needed if plugins provided) the directory in which all the `plugins` have been installed. `ssb-ahoy` will go look there for the plugins to load!
 - `uiPath` - string which points to the ui entry point of your app
 - `onReady` - a callback which is run after ahoy hands over to your main app
+- `appDir` - (optional) the relative path to your app root _from the ssb-ahoy module_. Generally just don't touch this, you don't want to know
 
 ## The voyage map
 
