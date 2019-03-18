@@ -10,7 +10,7 @@ module.exports = function (appDir) {
   ]
 
   return [
-    ...core.map(plugin => join(appDir, 'node_modules', plugin)),
+    ...core.map(plugin => join('../..', appDir, 'node_modules', plugin)),
 
     // TODO check the plugins provided and use their versions if possible (rather than ssb-ahoy ones)
     'ssb-gossip',
