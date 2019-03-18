@@ -6,6 +6,7 @@ const Menu = require('./electron/menu')
 const Server = require('./electron/process/server')
 const UI = require('./electron/process/ui')
 const Plugins = require('./lib/build-plugins')
+const ConfigLocal = require('./lib/build-config-local')
 const MinimalPlugins = require('./plugins-minimal')
 const CheckSetUp = require('./lib/is-set-up')
 const log = require('./lib/log')
@@ -26,17 +27,19 @@ module.exports = function ahoy (opts) {
   if (typeof uiPath !== 'string') throw Error('ssb-ahoy: expects valid uiPath')
   if (typeof onReady !== 'function') throw Error('ssb-ahoy: expects valid onReady function')
 
+  const configLocal = ConfigLocal(config)
+
   const state = {
     steps: [
       { // focus of log replication
-        config,
+        config: configLocal,
         plugins: MinimalPlugins(modulesDir),
-        uiPath: join(__dirname, 'views/index.js') // TODO auto-progress?
+        uiPath: join(__dirname, 'views/replication/index.js') // TODO auto-progress?
       },
       { // focus on indexing
-        config,
+        config: configLocal,
         plugins: Plugins({ plugins, modulesDir }),
-        uiPath: join(__dirname, 'views/index.js') // TODO show progress differently
+        uiPath: join(__dirname, 'views/indexing/index.js') // TODO show progress differently
       },
       { // start user app
         title,

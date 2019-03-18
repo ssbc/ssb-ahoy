@@ -8,9 +8,10 @@ module.exports = function (modulesDir) {
     join(modulesDir, 'ssb-server/plugins/no-auth'), // in case config includes sockets
     join(modulesDir, 'ssb-server/plugins/logging'),
 
+    // TODO check the plugins provided and use their versions if possible (rather than ssb-ahoy ones)
     'ssb-gossip',
     'ssb-replicate',
-    'ssb-ebt',
+    'ssb-ebt', // NOTE - could be trouble with initial sync?
     'ssb-friends',
     'ssb-invite'
   ]
