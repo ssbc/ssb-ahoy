@@ -16,7 +16,7 @@ module.exports = function ahoy (opts) {
     title,
     config,
     plugins = [],
-    appDir = '../../../../node_modules',
+    appDir = '../../../..',
     uiPath,
     onReady = () => {}
   } = opts
@@ -70,7 +70,7 @@ module.exports = function ahoy (opts) {
       }
     })
 
-    CheckSetUp(config, modulesDir, (err, isSetUp) => {
+    CheckSetUp(config, appDir, (err, isSetUp) => {
       if (err) throw err
 
       if (isSetUp) state.step = state.steps.length - 2 // step before final step
@@ -136,7 +136,7 @@ module.exports = function ahoy (opts) {
     if (state.windows.server) throw Error('ahoy: you can only have one server at a time!')
 
     const { config, plugins } = state.steps[state.step]
-    state.windows.server = Server({ config, plugins, modulesDir })
+    state.windows.server = Server({ config, plugins, appDir })
   }
 
   function StartUI () {
