@@ -3,12 +3,12 @@ const { join } = require('path')
 const WindowState = require('electron-window-state')
 
 module.exports = function uiWindow (uiPath, opts, config) {
+  uiPath = join('../..', uiPath)
+
   var windowState = WindowState({
     defaultWidth: 1024,
     defaultHeight: 768
   })
-
-  if (uiPath.startsWith('./views')) uiPath = join('../..', uiPath)
 
   opts = Object.assign({
     title: 'scuttlebutt ahoy!',

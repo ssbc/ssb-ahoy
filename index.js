@@ -16,7 +16,7 @@ module.exports = function ahoy (opts) {
     title,
     config,
     plugins = [],
-    appDir = '../../../..',
+    appDir = '../..',
     uiPath,
     onReady = () => {}
   } = opts
