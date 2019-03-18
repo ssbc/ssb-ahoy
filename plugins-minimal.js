@@ -1,12 +1,16 @@
 const { join } = require('path')
 
-module.exports = function (modulesDir) {
+module.exports = function (appDir) {
+  const core = [
+    'ssb-server/plugins/master',
+    'ssb-server/plugins/local',
+    'ssb-server/plugins/unix-socket', // in case config includes sockets
+    'ssb-server/plugins/no-auth', // in case config includes sockets
+    'ssb-server/plugins/logging'
+  ]
+
   return [
-    join(modulesDir, 'ssb-server/plugins/master'),
-    join(modulesDir, 'ssb-server/plugins/local'),
-    join(modulesDir, 'ssb-server/plugins/unix-socket'), // in case config includes sockets
-    join(modulesDir, 'ssb-server/plugins/no-auth'), // in case config includes sockets
-    join(modulesDir, 'ssb-server/plugins/logging'),
+    ...core.map(plugin => join(appDir, 'node_modules', plugin)),
 
     // TODO check the plugins provided and use their versions if possible (rather than ssb-ahoy ones)
     'ssb-gossip',
