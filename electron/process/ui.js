@@ -1,5 +1,5 @@
 const electron = require('electron')
-const join = require('path').join
+const { join } = require('path')
 const WindowState = require('electron-window-state')
 
 module.exports = function uiWindow (uiPath, opts, config) {
@@ -7,6 +7,8 @@ module.exports = function uiWindow (uiPath, opts, config) {
     defaultWidth: 1024,
     defaultHeight: 768
   })
+
+  if (uiPath.startsWith('./views')) uiPath = join('../..', uiPath)
 
   opts = Object.assign({
     title: 'scuttlebutt ahoy!',
@@ -37,7 +39,7 @@ module.exports = function uiWindow (uiPath, opts, config) {
       document.documentElement.querySelector('head').appendChild(
         h('title', title)
       )
-      require(${JSON.stringify(uiPath)})(${JSON.stringify(config)})
+      require('${uiPath}')(${JSON.stringify(config)})
     `)
   })
 
