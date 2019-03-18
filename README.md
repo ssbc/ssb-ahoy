@@ -44,14 +44,16 @@ ahoy({
 
 ## API
 
-### `ahoy({ title, config, plugins, modulesDir, uiPath, onReady })`
+### `ahoy(opts, onReady)`
 
-- `title` - (optional) the title to be attached to the visible window
-- `config` - valid config for starting and connecting to an `ssb-server`, see [ssb-config](www.github.com/ssbc/ssb-config). Must include keys
-- `plugins` - (optional) an Array of the names of plugins you'd like to get ahoy to run indexes of for you
-- `uiPath` - string which points to the ui entry point of your app
-- `onReady` - a callback which is run after ahoy hands over to your main app
-- `appDir` - (optional) the relative path to your app root _from the ssb-ahoy module_. Generally just don't touch this, you don't want to know
+`opts` *Object*
+- `title` - *String* (optional) the title to be attached to the visible window
+- `config` - *Object* valid config for starting and connecting to an `ssb-server`, see [ssb-config](www.github.com/ssbc/ssb-config). Must include keys
+- `plugins` - *Array* (optional) a list of the names of plugins you'd like to get ahoy to run indexes of for you
+- `uiPath` - *String* string which points to the ui entry point of your app
+- `appDir` - *String* (optional) the relative path to your app root _from the ssb-ahoy module_. Generally just don't touch this, you don't want to know
+
+`onReady`- a callback which is run after ahoy hands over to your main app. Is passed some state data, e.g. `windows` (ui, server)
 
 ## The voyage map
 
@@ -69,6 +71,9 @@ Currently just hacking it so that `app.quit()` is not called, and patchbay uses 
 - [x] shows you progress of replication and indexing
 - [x] let's your quit out and try jumping to the next app!
 - [x] de-dups any double ups from developers adding plugins which ssb-ahoy is already using
+- [x] get it working on Unix / Windows
+  - [x] starts
+  - [ ] builds working installers
 - [ ] _ANY_ UI design + css !
 
 Bonus:
@@ -76,3 +81,12 @@ Bonus:
   - note that `lib/get-name` only looks for more recent self-set name. any more requires indexes
 - [ ] only provide (next) button if know (based on `ssb-ebt` data) have all the data for all the feeds
 - [x] split the replication into multiple stages
+
+
+## Development
+
+:warning: **WARNING** - because of limitations in electron, I've had to use `executeJavascript` which only takes strings.
+In terms of requiring plugins, this has meant some kinda nasty hacks so that ssb-ahoy doesn't have to maintain plugins.
+
+You are likely to have problems if you try to symlink this module into place.
+I highly recommend temporarily cloning this repo into your `node_modules` to make for predictable development.
