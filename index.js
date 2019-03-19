@@ -11,14 +11,13 @@ const CheckSetUp = require('./lib/is-set-up')
 const join = require('./lib/join')
 const log = require('./lib/log')
 
-module.exports = function ahoy (opts) {
+module.exports = function ahoy (opts, onReady = noop) {
   const {
     title,
     config,
     plugins = [],
     appDir = '../..',
-    uiPath,
-    onReady = () => {}
+    uiPath
   } = opts
 
   if (typeof config !== 'object' || !config.keys) throw Error('ssb-ahoy: expects valid server config')
@@ -160,3 +159,5 @@ module.exports = function ahoy (opts) {
     if (state.step === state.steps.length - 1) onReady({ windows: state.windows })
   }
 }
+
+function noop () {}
