@@ -153,7 +153,7 @@ module.exports = function ahoy (opts) {
     })
     ui.on('closed', function () {
       state.windows.ui = null
-      if (state.quitting && process.platform !== 'darwin') electron.app.quit()
+      if (process.platform !== 'darwin') electron.app.quit()
     })
 
     state.windows.ui = ui
