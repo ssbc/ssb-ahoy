@@ -1,6 +1,7 @@
 const electron = require('electron')
-const { join } = require('path')
 const WindowState = require('electron-window-state')
+const path = require('path')
+const join = require('../../lib/join')
 
 module.exports = function uiWindow (uiPath, opts, config) {
   uiPath = join('../..', uiPath)
@@ -53,6 +54,6 @@ module.exports = function uiWindow (uiPath, opts, config) {
     electron.shell.openExternal(url)
   })
 
-  win.loadURL('file://' + join(__dirname, '../assets/base.html'))
+  win.loadURL('file://' + path.join(__dirname, '../assets/base.html'))
   return win
 }

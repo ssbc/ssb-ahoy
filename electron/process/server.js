@@ -1,5 +1,5 @@
 const electron = require('electron')
-const join = require('path').join
+const path = require('path')
 
 module.exports = function serverWindow ({ config, plugins, appDir }) {
   const opts = {
@@ -35,7 +35,7 @@ module.exports = function serverWindow ({ config, plugins, appDir }) {
     electron.shell.openExternal(url)
   })
 
-  win.loadURL('file://' + join(__dirname, '../assets/base.html'))
+  win.loadURL('file://' + path.join(__dirname, '../assets/base.html'))
   return win
 }
 
@@ -44,7 +44,8 @@ function script ({ config, plugins = [], appDir }) {
     var electron = require('electron')
     var h = require('mutant/h')
     var fs = require('fs')
-    var { join, resolve } = require('path')
+    var path = require('path')
+    var join = require('../../lib/join')
     var log = require('../../lib/log')
     var config = ${JSON.stringify(config)}
 
@@ -70,7 +71,7 @@ function script ({ config, plugins = [], appDir }) {
       server = Server(config)
 
       fs.writeFileSync(
-        '${join(config.path, 'manifest.json')}',
+        '${path.join(config.path, 'manifest.json')}',
         JSON.stringify(server.getManifest())
       )
 

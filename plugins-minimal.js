@@ -1,4 +1,4 @@
-const { join } = require('path')
+const join = require('./lib/join')
 
 module.exports = function (appDir) {
   const core = [

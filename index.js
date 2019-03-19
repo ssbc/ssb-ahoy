@@ -1,6 +1,5 @@
 const electron = require('electron')
 const { ipcMain } = electron
-const { join } = require('path')
 
 const Menu = require('./electron/menu')
 const Server = require('./electron/process/server')
@@ -9,6 +8,7 @@ const Plugins = require('./lib/build-plugins')
 const ConfigLocal = require('./lib/build-config-local')
 const MinimalPlugins = require('./plugins-minimal')
 const CheckSetUp = require('./lib/is-set-up')
+const join = require('./lib/join')
 const log = require('./lib/log')
 
 module.exports = function ahoy (opts) {

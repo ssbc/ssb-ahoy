@@ -4,7 +4,7 @@ An onboarding mini-app - gets you all set up, and caught up on the gossip before
 
 You currently need to be on the same network as another peer (this version has to start with local peer recplication)
 
-## Example
+## Example usage
 
 ```js
 // index.js
@@ -20,15 +20,18 @@ const plugins = [
   'ssb-suggest'
 ]
 
-ahoy({
-  title: 'Patchbay',
-  config,
-  plugins,
-  uiPath: './app.js', // entry point to your main app
-  onReady: () => {
+ahoy(
+  {
+    title: 'Patchbay',
+    config,
+    plugins,
+    uiPath: './app.js' // entry point to your main app
+  },
+  (state) => {
     console.log('welcome aboard')
+    console.log(state)
   }
-})
+)
 ```
 
 ```json
@@ -50,7 +53,7 @@ ahoy({
 - `title` - *String* (optional) the title to be attached to the visible window
 - `config` - *Object* valid config for starting and connecting to an `ssb-server`, see [ssb-config](www.github.com/ssbc/ssb-config). Must include keys
 - `plugins` - *Array* (optional) a list of the names of plugins you'd like to get ahoy to run indexes of for you
-- `uiPath` - *String* string which points to the ui entry point of your app
+- `uiPath` - *String* string which points to the ui entry point of your app. This is expected to be a function and will be passed a copy of the `config` (so it can connect to the server that's been started!)
 - `appDir` - *String* (optional) the relative path to your app root _from the ssb-ahoy module_. Generally just don't touch this, you don't want to know
 
 `onReady`- a callback which is run after ahoy hands over to your main app. Is passed some state data, e.g. `windows` (ui, server)
