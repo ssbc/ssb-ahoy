@@ -78,6 +78,7 @@ Currently just hacking it so that `app.quit()` is not called, and patchbay uses 
   - [x] starts
   - [ ] builds working installers
 - [ ] _ANY_ UI design + css !
+- [ ] use remotely provided core plugins if they're provided (instead of ones installed here)
 
 Bonus:
 - [ ] names next to the local peers keys
