@@ -1,6 +1,6 @@
 {
   "name": "ssb-ahoy",
-  "version": "0.6.0",
+  "version": "0.7.0",
   "description": "handle the initial sync as you join scuttlebutt for the first time",
   "main": "index.js",
   "scripts": {
