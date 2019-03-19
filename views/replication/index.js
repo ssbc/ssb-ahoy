@@ -3,6 +3,7 @@ const { h, Value, Dict, computed, resolve, watch } = require('mutant')
 const { ipcRenderer } = require('electron')
 const pull = require('pull-stream')
 const Abortable = require('pull-abortable')
+const Progress = require('progress-hex')
 
 // polyfills
 require('setimmediate')
@@ -10,7 +11,7 @@ require('setimmediate')
 const getStatus = require('../../lib/get-status')
 const log = require('../../lib/log')
 const Follow = require('../../lib/follow')
-const Progress = require('../com/progress-bar')
+// const Progress = require('../com/progress-bar')
 
 module.exports = function (config) {
   if (!config) throw new Error('view requires a config to know how to connect to server')
@@ -65,7 +66,10 @@ module.exports = function (config) {
     }),
     h('div', [
       h('h2', 'Replication progress: '),
-      computed([state.progress.indexes.current, state.progress.indexes.target], (c, t) => Progress(0, t))
+      // computed([state.progress.indexes.current, state.progress.indexes.target], (c, t) => Progress(0, t))
+      computed([state.progress.indexes.current, state.progress.indexes.target], (current, target) => {
+        return Progress({ n: target, progress: 0 })
+      })
     ]),
     h('div', [
       h('p', `
@@ -88,6 +92,7 @@ module.exports = function (config) {
   }
 }
 
+const MB = 1024 * 1024
 function State (config) {
   const state = {
     server: Value(),
@@ -122,8 +127,9 @@ function State (config) {
           progress: { indexes: { current, target } },
           peers: { local, global }
         } = data
-        state.progress.indexes.current.set(current)
-        state.progress.indexes.target.set(target)
+
+        state.progress.indexes.current.set(Math.floor(current / MB))
+        state.progress.indexes.target.set(Math.floor(target / MB))
         state.peers.put('local', local)
         state.peers.put('global', global)
       })

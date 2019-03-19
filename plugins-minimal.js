@@ -15,7 +15,7 @@ module.exports = function (appDir) {
     // TODO check the plugins provided and use their versions if possible (rather than ssb-ahoy ones)
     'ssb-gossip',
     'ssb-replicate',
-    'ssb-ebt', // NOTE - could be trouble with initial sync?
+    // 'ssb-ebt', // NOTE - could be trouble with initial sync?
     'ssb-friends',
     'ssb-invite'
   ]
