@@ -11,7 +11,6 @@ require('setimmediate')
 const getStatus = require('../../lib/get-status')
 const log = require('../../lib/log')
 const Follow = require('../../lib/follow')
-// const Progress = require('../com/progress-bar')
 
 module.exports = function (config) {
   if (!config) throw new Error('view requires a config to know how to connect to server')
@@ -23,12 +22,12 @@ module.exports = function (config) {
       'My FeedId: ',
       h('pre', state.myId)
     ]),
-    computed([state.server, state.peers, state.hops], (server, peers, hops) => {
+    computed([state.server, state.connections, state.hops], (server, connections, hops) => {
       if (!server) return 'Loading...'
 
       return h('div', [
-        h('div', 'peers.local'),
-        h('ul', peers.local.map(peer => {
+        h('div', 'connections.local'),
+        h('ul', connections.local.map(peer => {
           if (hops[peer.key] === 1) {
             return h('li', [
               h('pre', peer.key),
@@ -54,8 +53,8 @@ module.exports = function (config) {
             peer.state
           ])
         })),
-        h('div', 'peers.web'),
-        h('ul', peers.global.map(peer => {
+        h('div', 'connections.web'),
+        h('ul', connections.global.map(peer => {
           return h('li', [
             h('pre', peer.key),
             ' ',
@@ -66,9 +65,8 @@ module.exports = function (config) {
     }),
     h('div', [
       h('h2', 'Replication progress: '),
-      // computed([state.progress.indexes.current, state.progress.indexes.target], (c, t) => Progress(0, t))
-      computed([state.progress.indexes.current, state.progress.indexes.target], (current, target) => {
-        return Progress({ n: target, progress: 0 })
+      computed([state.database.size, state.database.indexed], (size, indexed) => {
+        return Progress({ n: size, progress: 0 })
       })
     ]),
     h('div', [
@@ -92,21 +90,18 @@ module.exports = function (config) {
   }
 }
 
-const MB = 1024 * 1024
 function State (config) {
   const state = {
     server: Value(),
     myId: Value(),
-    peers: Dict({
+    connections: Dict({
       local: [],
       global: []
     }),
     hops: Value({}),
-    progress: {
-      indexes: {
-        current: Value('?'),
-        target: Value('?')
-      }
+    database: {
+      size: Value(0),
+      indexed: Value(0)
     },
     quitting: Value(false)
   }
@@ -124,14 +119,14 @@ function State (config) {
         if (err) return console.error(err)
 
         const {
-          progress: { indexes: { current, target } },
-          peers: { local, global }
+          database: { size, indexed },
+          connections: { local, global }
         } = data
 
-        state.progress.indexes.current.set(Math.floor(current / MB))
-        state.progress.indexes.target.set(Math.floor(target / MB))
-        state.peers.put('local', local)
-        state.peers.put('global', global)
+        state.database.size.set(size)
+        state.database.indexed.set(indexed)
+        state.connections.put('local', local)
+        state.connections.put('global', global)
       })
       setTimeout(loop, 1e3)
     }

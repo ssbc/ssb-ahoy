@@ -30,8 +30,8 @@
     "ssb-config": "^3.2.5",
     "ssb-ebt": "^5.5.2",
     "ssb-friends": "^3.1.13",
-    "ssb-gossip": "^1.0.4",
-    "ssb-invite": "^2.0.3",
+    "ssb-invite": "^2.0.4",
+    "ssb-legacy-conn": "^1.0.17",
     "ssb-replicate": "^1.0.4"
   }
 }

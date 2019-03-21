@@ -3,6 +3,7 @@ const { h, Value, Dict, computed, resolve, watch } = require('mutant')
 const { ipcRenderer } = require('electron')
 const pull = require('pull-stream')
 const Abortable = require('pull-abortable')
+const Progress = require('progress-hex')
 
 // polyfills
 require('setimmediate')
@@ -10,7 +11,6 @@ require('setimmediate')
 const getStatus = require('../../lib/get-status')
 const log = require('../../lib/log')
 const Follow = require('../../lib/follow')
-const Progress = require('../com/progress-bar')
 
 module.exports = function (config) {
   if (!config) throw new Error('view requires a config to know how to connect to server')
@@ -65,7 +65,9 @@ module.exports = function (config) {
     }),
     h('div', [
       h('h2', 'Processing progress: '),
-      computed([state.progress.indexes.current, state.progress.indexes.target], Progress)
+      computed([state.database.size, state.database.indexed], (size, indexed) => {
+        return Progress({ n: size, progress: indexed })
+      })
     ]),
     h('div', [
       h('p', `
@@ -91,16 +93,14 @@ function State (config) {
   const state = {
     server: Value(),
     myId: Value(),
-    peers: Dict({
+    connections: Dict({
       local: [],
       global: []
     }),
     hops: Value({}),
-    progress: {
-      indexes: {
-        current: Value('?'),
-        target: Value('?')
-      }
+    database: {
+      size: Value(0),
+      indexed: Value(0)
     },
     quitting: Value(false)
   }
@@ -118,13 +118,14 @@ function State (config) {
         if (err) return console.error(err)
 
         const {
-          progress: { indexes: { current, target } },
-          peers: { local, global }
+          database: { size, indexed },
+          connections: { local, global }
         } = data
-        state.progress.indexes.current.set(current)
-        state.progress.indexes.target.set(target)
-        state.peers.put('local', local)
-        state.peers.put('global', global)
+
+        state.database.size.set(size)
+        state.database.indexed.set(indexed)
+        state.connections.put('local', local)
+        state.connections.put('global', global)
       })
       setTimeout(loop, 1e3)
     }
@@ -135,8 +136,6 @@ function State (config) {
       if (quitting) server.close()
     })
   })
-
-  return state
 }
 
 function streamHops (server, state) {

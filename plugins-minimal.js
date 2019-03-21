@@ -13,7 +13,7 @@ module.exports = function (appDir) {
     ...core.map(plugin => join('../..', appDir, 'node_modules', plugin)),
 
     // TODO check the plugins provided and use their versions if possible (rather than ssb-ahoy ones)
-    'ssb-gossip',
+    'ssb-legacy-conn',
     'ssb-replicate',
     // 'ssb-ebt', // NOTE - could be trouble with initial sync?
     'ssb-friends',
