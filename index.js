@@ -59,7 +59,6 @@ module.exports = function ahoy (opts, onReady = noop) {
     Menu()
 
     electron.app.on('before-quit', function () {
-      console.log('here we are! quitting!!')
       state.quitting = true
     })
 
@@ -122,7 +121,6 @@ module.exports = function ahoy (opts, onReady = noop) {
     // state.windows.ui.webContents.executeJavascript("console.log('scoop it out!')")
 
     state.windows.ui.close()
-    // state.windows.ui.hide()
     state.windows.ui = null
   }
 
@@ -150,7 +148,7 @@ module.exports = function ahoy (opts, onReady = noop) {
       if (!state.quitting && process.platform === 'darwin') {
         e.preventDefault()
         ui.hide()
-      } 
+      }
     })
     ui.on('closed', function () {
       state.windows.ui = null

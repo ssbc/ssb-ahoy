@@ -3,6 +3,7 @@ const electron = require('electron')
 
 module.exports = function installMenu () {
   var menu = defaultMenu(electron.app, electron.shell)
+
   var view = menu.find(x => x.label === 'View')
   view.submenu = [
     { role: 'reload' },
@@ -15,10 +16,8 @@ module.exports = function installMenu () {
     { role: 'togglefullscreen' }
   ]
 
-  // TODO - should perhaps disable "close" because we've 
-
+  var win = menu.find(x => x.label === 'Window')
   if (process.platform === 'darwin') {
-    var win = menu.find(x => x.label === 'Window')
     win.submenu = [
       { role: 'minimize' },
       { role: 'zoom' },
@@ -26,6 +25,11 @@ module.exports = function installMenu () {
       { role: 'quit' },
       { type: 'separator' },
       { role: 'front' }
+    ]
+  } else {
+    win.submenu = [
+      { role: 'minimize' },
+      { role: 'quit' }
     ]
   }
 
