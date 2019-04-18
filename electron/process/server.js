@@ -60,8 +60,9 @@ function script ({ config, plugins = [], appDir }) {
 
     electron.ipcRenderer.once('server-close', () => {
       log('(server) RECEIVED << server-close')
-      server.close()
-      electron.ipcRenderer.send('server-closed')
+      server.close(() => {
+        electron.ipcRenderer.send('server-closed')
+      })
     })
 
     function startAhoyServer () {

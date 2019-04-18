@@ -14,12 +14,16 @@ module.exports = function installMenu () {
     { type: 'separator' }, // ---
     { role: 'togglefullscreen' }
   ]
+
+  // TODO - should perhaps disable "close" because we've 
+
   if (process.platform === 'darwin') {
     var win = menu.find(x => x.label === 'Window')
     win.submenu = [
       { role: 'minimize' },
       { role: 'zoom' },
-      { role: 'close', label: 'Close' },
+      // { role: 'close', label: 'Close' },
+      { role: 'quit' },
       { type: 'separator' },
       { role: 'front' }
     ]

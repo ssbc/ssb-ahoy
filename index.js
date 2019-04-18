@@ -59,6 +59,7 @@ module.exports = function ahoy (opts, onReady = noop) {
     Menu()
 
     electron.app.on('before-quit', function () {
+      console.log('here we are! quitting!!')
       state.quitting = true
     })
 
@@ -85,12 +86,7 @@ module.exports = function ahoy (opts, onReady = noop) {
       if (state.windows.ui) state.windows.ui.show()
     })
 
-    ipcMain.on('server-close', function () {
-      log('(main) RELAYING <> server-close')
-      if (state.windows.server) state.windows.server.webContents.send('server-close')
-    })
-
-    ipcMain.on('log', log)
+    ipcMain.on('ahoy:log', log)
   }
 
   function step () {
@@ -109,6 +105,8 @@ module.exports = function ahoy (opts, onReady = noop) {
   }
 
   function clearServer (cb) {
+    log('(main) clearing Server')
+
     state.windows.server.webContents.send('server-close')
     ipcMain.once('server-closed', () => {
       log('(main) RECEIVED << server-closed')
@@ -122,7 +120,9 @@ module.exports = function ahoy (opts, onReady = noop) {
 
     log('(main) clearing UI')
     // state.windows.ui.webContents.executeJavascript("console.log('scoop it out!')")
+
     state.windows.ui.close()
+    // state.windows.ui.hide()
     state.windows.ui = null
   }
 
@@ -134,28 +134,28 @@ module.exports = function ahoy (opts, onReady = noop) {
   function StartServer () {
     if (state.windows.server) throw Error('ahoy: you can only have one server at a time!')
 
+    log('(main) starting Server')
     const { config, plugins } = state.steps[state.step]
     state.windows.server = Server({ config, plugins, appDir })
   }
 
   function StartUI () {
+    log('(main) starting UI')
     const { uiPath, title, config } = state.steps[state.step]
-
     const ui = UI(uiPath, { title }, config)
-    ui.setSheetOffset(40)
+    state.windows.ui = ui
 
+    ui.setSheetOffset(40)
     ui.on('close', function (e) {
       if (!state.quitting && process.platform === 'darwin') {
         e.preventDefault()
         ui.hide()
-      }
+      } 
     })
     ui.on('closed', function () {
       state.windows.ui = null
-      if (process.platform !== 'darwin') electron.app.quit()
     })
 
-    state.windows.ui = ui
     if (state.step === state.steps.length - 1) onReady({ windows: state.windows })
   }
 }

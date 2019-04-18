@@ -22,12 +22,12 @@ module.exports = function (config) {
       'My FeedId: ',
       h('pre', state.myId)
     ]),
-    computed([state.server, state.peers, state.hops], (server, peers, hops) => {
+    computed([state.server, state.connections, state.hops], (server, connections, hops) => {
       if (!server) return 'Loading...'
 
       return h('div', [
-        h('div', 'peers.local'),
-        h('ul', peers.local.map(peer => {
+        h('div', 'connections.local'),
+        h('ul', connections.local.map(peer => {
           if (hops[peer.key] === 1) {
             return h('li', [
               h('pre', peer.key),
@@ -53,8 +53,8 @@ module.exports = function (config) {
             peer.state
           ])
         })),
-        h('div', 'peers.web'),
-        h('ul', peers.global.map(peer => {
+        h('div', 'connections.web'),
+        h('ul', connections.global.map(peer => {
           return h('li', [
             h('pre', peer.key),
             ' ',
@@ -82,10 +82,6 @@ module.exports = function (config) {
 
   function NextStep () {
     state.quitting.set(true)
-    resolve(state.server).close(() => {
-      log('(ui) SENDING  >> ahoy:step')
-      ipcRenderer.send('ahoy:step')
-    })
   }
 }
 
@@ -133,9 +129,15 @@ function State (config) {
     streamHops(server, state)
 
     watch(state.quitting, quitting => {
-      if (quitting) server.close()
+      if (!quitting) return
+
+      server.close()
+      log('(ui) SENDING  >> ahoy:step')
+      ipcRenderer.send('ahoy:step')
     })
   })
+
+  return state
 }
 
 function streamHops (server, state) {

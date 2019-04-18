@@ -23,6 +23,7 @@
     "lodash.merge": "^4.6.1",
     "lodash.pickby": "^4.6.0",
     "mutant": "^3.22.1",
+    "progress-hex": "^1.0.0",
     "pull-abortable": "^4.1.1",
     "pull-stream": "^3.6.9",
     "setimmediate": "^1.0.5",
@@ -31,7 +32,7 @@
     "ssb-ebt": "^5.5.2",
     "ssb-friends": "^3.1.13",
     "ssb-invite": "^2.0.4",
-    "ssb-legacy-conn": "^1.0.17",
-    "ssb-replicate": "^1.0.4"
+    "ssb-legacy-conn": "^1.0.23",
+    "ssb-replicate": "^1.2.4"
   }
 }

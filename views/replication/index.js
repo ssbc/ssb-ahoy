@@ -83,10 +83,6 @@ module.exports = function (config) {
 
   function NextStep () {
     state.quitting.set(true)
-    resolve(state.server).close(() => {
-      log('(ui) SENDING  >> ahoy:step')
-      ipcRenderer.send('ahoy:step')
-    })
   }
 }
 
@@ -134,7 +130,11 @@ function State (config) {
     streamHops(server, state)
 
     watch(state.quitting, quitting => {
-      if (quitting) server.close()
+      if (!quitting) return
+
+      server.close()
+      log('(ui) SENDING  >> ahoy:step')
+      ipcRenderer.send('ahoy:step')
     })
   })
 
