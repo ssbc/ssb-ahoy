@@ -65,7 +65,7 @@ module.exports = function ahoy (opts, onReady = noop) {
     // allow inspecting of background process
     electron.ipcMain.on('open-background-devtools', function (ev, config) {
       if (state.windows.server) {
-        state.windows.server.webContents.openDevTools({ detach: true })
+        state.windows.server.webContents.openDevTools({ mode: 'detach' })
       }
     })
 
