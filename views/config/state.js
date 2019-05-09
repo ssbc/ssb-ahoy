@@ -61,6 +61,7 @@ module.exports = function State (config) {
 
       if (err) return // TODO propose new identity ?
       state.appname.options.push(name)
+      state.appname.new.set('')
     })
   })
 
@@ -84,7 +85,7 @@ module.exports = function State (config) {
   watch(state.quitting, quitting => {
     if (!quitting) return
 
-    ipcRenderer.send('ahoy:appname', resolve(state.appname)) // could send config too...
+    ipcRenderer.send('ahoy:appname', resolve(state.appname.selected)) // could send config too...
 
     log('(ui) SENDING  >> ahoy:step')
     ipcRenderer.send('ahoy:step')

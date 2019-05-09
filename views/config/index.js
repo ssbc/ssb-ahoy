@@ -6,8 +6,6 @@ const JSON5 = require('json5')
 require('setimmediate')
 
 const State = require('./state')
-const log = require('../../lib/log')
-
 
 module.exports = function (config) {
   // no config expected in this step
@@ -15,6 +13,9 @@ module.exports = function (config) {
   const state = State(config)
 
   const App = h('App', [
+    h('div', [
+      h('img', { src: './bandana.jpg' })
+    ]),
     computed([state.appname.selected, state.appname.options], (appname, appnames) => {
       return appnames.map(name => {
         return h('button', {
@@ -27,8 +28,10 @@ module.exports = function (config) {
     h('div.create', [
       h('input', {
         'placeholder': 'find or create a new identity',
-        'ev-input': ev => state.appname.new.set(ev.target.value.trim())
+        'ev-input': ev => state.appname.new.set(ev.target.value.trim()),
+        'value': state.appname.new
       }),
+      when(throttle(state.searching, 500), h('span', ' searching...')),
       when(throttle(state.loading, 500), h('span', ' loading...')),
       when(throttle(state.saving, 500), h('span', ' saving...'))
     ]),
