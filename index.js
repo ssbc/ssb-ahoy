@@ -65,7 +65,7 @@ module.exports = function ahoy (opts, onReady = noop) {
   }
 
   electron.app.on('ready', () => {
-    // TODO - check this is even used. I think this needs to be called in the UI windows?
+    // TODO check this is even used. I think this needs to be called in the UI windows?
     Menu()
 
     electron.app.on('before-quit', function (e) {
