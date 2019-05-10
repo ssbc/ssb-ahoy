@@ -8,6 +8,7 @@ const { join } = require('path')
 const JSON5 = require('json5')
 const isEqual = require('lodash.isequal')
 const clone = require('lodash.clone')
+const merge = require('lodash.merge')
 
 const log = require('../../lib/log')
 
@@ -73,6 +74,8 @@ module.exports = function State (config) {
     if (loading) return
     if (isEqual(current, next)) return
 
+    preserveCaps(current, next)
+
     state.saving.set(true)
     fs.writeFile(
       join(home, '.' + resolve(state.appname.selected), 'config'),
@@ -118,4 +121,20 @@ function loadStoredAppnames (state) {
       state.appname.options.push(name)
     })
   })
+}
+
+// this isn't perfect but it prevents people from over-writing a valid caps.sign,
+// which could lead to them irreperably forking their feed
+function preserveCaps (current, next) {
+  const sign = current.caps && current.caps.sign
+
+  if (sign && validSign(sign)) {
+    merge(next, {
+      caps: { sign }
+    })
+  }
+}
+
+function validSign (str) {
+  return str.length === 44 && str.endsWith('=')
 }
