@@ -15,9 +15,10 @@ module.exports = function State (config) {
   const state = {
     appname: {
       selected: Value('ssb'),
-      options: MutantArray(JSON5.parse(localStorage.ssbAhoyAppnames || '["ssb"]')),
+      options: MutantArray(),
       new: Value()
     },
+    feedId: Value(),
     config: {
       current: Value(),
       next: Value()
@@ -25,14 +26,16 @@ module.exports = function State (config) {
     searching: Value(false),
     loading: Value(false),
     saving: Value(false),
+    error: Value(),
     quitting: Value(false)
   }
+  
+  loadStoredAppnames(state)
 
   watch(state.appname.selected, (appname) => {
     const config = Config(appname)
-    // could just use os-home for path
-    // but this creates fodlers / keys for us too..
 
+    state.feedId.set(config.keys.id)
     state.loading.set(true)
 
     fs.readFile(join(config.path, 'config'), 'utf8', (err, str) => {
@@ -47,6 +50,7 @@ module.exports = function State (config) {
   })
 
   watch(state.appname.options, (options) => {
+    if (!options) return
     localStorage.ssbAhoyAppnames = JSON.stringify(options || ['ssb'])
   })
 
@@ -55,9 +59,15 @@ module.exports = function State (config) {
     if (state.appname.options.includes(name)) return
 
     state.searching.set(true)
+    validAppname(name, (_, valid) => {
+      state.searching.set(false)
+      if (valid) {
+        state.appname.options.push(name)
+        state.appname.new.set('')
+      }
+    })
 
     fs.stat(join(home, '.' + name, 'secret'), (err, data) => {
-      state.searching.set(false)
 
       if (err) return // TODO propose new identity ?
       state.appname.options.push(name)
@@ -74,10 +84,11 @@ module.exports = function State (config) {
       join(home, '.' + resolve(state.appname.selected), 'config'),
       JSON.stringify(next, null, 2),
       (err) => {
-        if (err) return console.error(err) // TODO handle error better
+        if (err) return state.error.set(err)
 
         state.config.current.set(clone(next))
         state.saving.set(false)
+        state.error.set()
       }
     )
   })
@@ -92,4 +103,25 @@ module.exports = function State (config) {
   })
 
   return state
+}
+
+function validAppname (name, cb) {
+  fs.stat(join(home, '.' + name, 'secret'), (err, data) => {
+    if (err) cb(null, false)
+    else cb(null, true)
+  })
+}
+
+function loadStoredAppnames (state) {
+  const appnames = ['ssb']
+    .concat(JSON5.parse(localStorage.ssbAhoyAppnames || '[]'))
+
+  appnames.forEach(name => {
+    validAppname(name, (_, valid) => {
+      if (!valid) return
+      if (state.appname.options.includes(name)) return
+
+      state.appname.options.push(name)
+    })
+  })
 }

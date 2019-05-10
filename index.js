@@ -70,7 +70,7 @@ module.exports = function ahoy (opts, onReady = noop) {
 
     electron.app.on('before-quit', function (e) {
       if (state.isStepping) e.preventDefault()
-      else console.log('before-quit')
+      else log('(main) quitting')
     })
 
     // allow inspecting of background process
@@ -175,10 +175,18 @@ module.exports = function ahoy (opts, onReady = noop) {
 
     ui.setSheetOffset(40)
     ui.on('close', function (e) {
-      if (!state.quitting && process.platform === 'darwin') {
-        e.preventDefault()
-        ui.hide()
+      if (process.platform === 'darwin') {
+        if (!state.quitting) {
+          e.preventDefault()
+          ui.hide()
+        }
+      } else {
+        if (!state.isStepping) electron.app.quit()
       }
+      // if (!state.quitting && process.platform === 'darwin') {
+      //   e.preventDefault()
+      //   ui.hide()
+      // }
     })
     ui.on('closed', function () {
       state.windows.ui = null
