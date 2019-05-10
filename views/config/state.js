@@ -29,7 +29,7 @@ module.exports = function State (config) {
     error: Value(),
     quitting: Value(false)
   }
-  
+
   loadStoredAppnames(state)
 
   watch(state.appname.selected, (appname) => {
@@ -63,15 +63,9 @@ module.exports = function State (config) {
       state.searching.set(false)
       if (valid) {
         state.appname.options.push(name)
+        state.appname.selected.set(name)
         state.appname.new.set('')
       }
-    })
-
-    fs.stat(join(home, '.' + name, 'secret'), (err, data) => {
-
-      if (err) return // TODO propose new identity ?
-      state.appname.options.push(name)
-      state.appname.new.set('')
     })
   })
 
