@@ -4,6 +4,8 @@
   "description": "handle the initial sync as you join scuttlebutt for the first time",
   "main": "index.js",
   "scripts": {
+    "postinstall": "npm run rebuild",
+    "rebuild": "electron-builder install-app-deps",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [
@@ -37,5 +39,8 @@
     "ssb-invite": "^2.0.4",
     "ssb-legacy-conn": "^1.0.23",
     "ssb-replicate": "^1.2.4"
+  },
+  "devDependencies": {
+    "electron-builder": "^20.40.2"
   }
 }
