@@ -2,7 +2,7 @@ const { Value, resolve, watch, watchAll, Array: MutantArray, throttle } = requir
 const { ipcRenderer } = require('electron')
 const Config = require('ssb-config/inject')
 const fs = require('fs')
-const home = require('os-homedir')()
+const home = require('os').homedir()
 const { join } = require('path')
 
 const JSON5 = require('json5')

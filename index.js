@@ -70,7 +70,10 @@ module.exports = function ahoy (opts, onReady = noop) {
 
     electron.app.on('before-quit', function (e) {
       if (state.isStepping) e.preventDefault()
-      else log('(main) quitting')
+      else {
+        state.quitting = true
+        log('(main) quitting')
+      }
     })
 
     // allow inspecting of background process

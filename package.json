@@ -28,7 +28,6 @@
     "lodash.pickby": "^4.6.0",
     "micro-css": "^2.0.1",
     "mutant": "^3.22.1",
-    "os-homedir": "^2.0.0",
     "progress-hex": "^1.0.0",
     "pull-abortable": "^4.1.1",
     "pull-stream": "^3.6.9",
