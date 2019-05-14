@@ -4,8 +4,6 @@
   "description": "handle the initial sync as you join scuttlebutt for the first time",
   "main": "index.js",
   "scripts": {
-    "postinstall": "npm run rebuild",
-    "rebuild": "cross-script npm rebuild --runtime=electron \"--target=$(electron -v)\" \"--abi=$(electron --abi)\" --disturl=https://atom.io/download/atom-shell",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [
@@ -15,7 +13,6 @@
   "author": "mixmix",
   "license": "AGPL-3.0",
   "dependencies": {
-    "cross-script": "^1.0.5",
     "electron": "^4.2.0",
     "electron-default-menu": "^1.0.1",
     "electron-window-state": "^5.0.3",
