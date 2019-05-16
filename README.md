@@ -11,8 +11,11 @@ You currently need to be on the same network as another peer (this version has t
 const ahoy = require('ssb-ahoy')
 const Config = require('ssb-config/inject')
 
-const config = Config('ssb-test-account')
 const plugins = [
+  'ssb-legacy-conn',
+  'ssb-replicate',
+  'ssb-friends',
+  'ssb-invite',
   'ssb-private',
   'ssb-backlinks',
   'ssb-about',
@@ -23,7 +26,7 @@ const plugins = [
 ahoy(
   {
     title: 'Patchbay',
-    config,
+    config: Config('ssb-test-account'),
     plugins,
     uiPath: './app.js' // entry point to your main app
   },
@@ -64,27 +67,32 @@ Note at the moment moment `ssb-ahoy` is running the main electron instance.
 We can't seem to easily quit out of it and launch pour own e.g. patchbay, using that electron... which would seem more ideal.
 Currently just hacking it so that `app.quit()` is not called, and patchbay uses ahoy's electron ...
 
-- [ ] skip ssb-ahoy if already "set up"
-  - [x] check I have a name
-  - [ ] check I have an image
-  - [ ] check I'm following people / have content?
-  - [ ] check I'm being replicated (later after peer-invites)
-- [ ] set your name / image
-- [x] lets you follow peers on a local network
-- [x] shows you progress of replication and indexing
-- [x] let's your quit out and try jumping to the next app!
-- [x] de-dups any double ups from developers adding plugins which ssb-ahoy is already using
-- [x] get it working on Unix / Windows
-  - [x] starts
+- [x] start with alternative configs
+  - [x] find or create new identities
+  - [x] see and edit `config` for an identity
+  - [x] block users from changing `caps.sign` if it's already set
+
+- [ ] option to skip skip ssb-ahoy
+  - [ ] based on some setting/ config somewhere
+  - [ ] based on account state (name, image, follows, seq)
+
+- [ ] set your name / image (if applicable)
+
+- [ ] first time replication + indexing (currently disabled)
+  - [x] lets you follow peers on a local network
+  - [x] shows you progress of replication and indexing
+  - [x] let's your quit out and try jumping to the next app!
+  - [x] get it working on Unix / Windows
+    - [x] starts
   - [ ] builds working installers
-- [ ] _ANY_ UI design + css !
-- [ ] use remotely provided core plugins if they're provided (instead of ones installed here)
+  - [ ] _ANY_ UI design + css !
+  - bonuses: 
+    - [ ] names next to the local peers keys
+      - note that `lib/get-name` only looks for more recent self-set name. any more requires indexes
+    - [ ] only provide (next) button if know (based on `ssb-ebt` data) have all the data for all the feeds
+    - [x] split the replication into multiple stages
 
 Bonus:
-- [ ] names next to the local peers keys
-  - note that `lib/get-name` only looks for more recent self-set name. any more requires indexes
-- [ ] only provide (next) button if know (based on `ssb-ebt` data) have all the data for all the feeds
-- [x] split the replication into multiple stages
 
 
 ## Development
@@ -93,4 +101,5 @@ Bonus:
 In terms of requiring plugins, this has meant some kinda nasty hacks so that ssb-ahoy doesn't have to maintain plugins.
 
 You are likely to have problems if you try to symlink this module into place.
-I highly recommend temporarily cloning this repo into your `node_modules` to make for predictable development.
+The solution is to set the `opts.appDir`. e.g. if I have `~/projects/patchbay` and `~/projects/ssb-ahoy`, then after linking ssb-ahoy into patchbay, I would set `appDir: '../patchbay'`
+
