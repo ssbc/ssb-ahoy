@@ -4,8 +4,6 @@
   "description": "handle the initial sync as you join scuttlebutt for the first time",
   "main": "index.js",
   "scripts": {
-    "postinstall": "npm run rebuild",
-    "rebuild": "cross-script npm rebuild --runtime=electron \"--target=$(electron -v)\" \"--abi=$(electron --abi)\" --disturl=https://atom.io/download/atom-shell",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [
@@ -15,17 +13,22 @@
   "author": "mixmix",
   "license": "AGPL-3.0",
   "dependencies": {
-    "cross-script": "^1.0.5",
-    "electron": "^2.0.18",
+    "electron": "^4.2.0",
     "electron-default-menu": "^1.0.1",
     "electron-window-state": "^5.0.3",
+    "font-awesome": "^4.7.0",
+    "json5": "^2.1.0",
+    "lodash.clone": "^4.5.0",
     "lodash.get": "^4.4.2",
+    "lodash.isequal": "^4.5.0",
     "lodash.merge": "^4.6.1",
     "lodash.pickby": "^4.6.0",
+    "micro-css": "^2.0.1",
     "mutant": "^3.22.1",
     "progress-hex": "^1.0.0",
     "pull-abortable": "^4.1.1",
     "pull-stream": "^3.6.9",
+    "require-style": "^1.0.1",
     "setimmediate": "^1.0.5",
     "ssb-client": "^4.6.1",
     "ssb-config": "^3.2.5",
@@ -34,5 +37,6 @@
     "ssb-invite": "^2.0.4",
     "ssb-legacy-conn": "^1.0.23",
     "ssb-replicate": "^1.2.4"
-  }
+  },
+  "devDependencies": {}
 }

@@ -3,7 +3,7 @@ const WindowState = require('electron-window-state')
 const path = require('path')
 const join = require('../../lib/join')
 
-module.exports = function uiWindow (uiPath, opts, config) {
+module.exports = function uiWindow (uiPath, opts = {}, config) {
   uiPath = join('../..', uiPath)
 
   var windowState = WindowState({
@@ -25,14 +25,18 @@ module.exports = function uiWindow (uiPath, opts, config) {
     frame: true, // !process.env.FRAME,
     // titleBarStyle: 'hidden',
     backgroundColor: '#fff',
-    icon: '../../assets/icon.png' // TODO may need fixing
+    icon: '../assets/icon.png' // TODO may need fixing
   }, opts)
 
   var win = new electron.BrowserWindow(opts)
   windowState.manage(win)
 
   win.webContents.on('dom-ready', function () {
-    win.webContents.executeJavaScript(`
+    win.webContents.executeJavaScript(Script(uiPath, opts, config))
+  })
+
+  function Script (uiPath, opts, config) {
+    return `
       var electron = require('electron')
       var h = require('mutant/h')
       electron.webFrame.setVisualZoomLevelLimits(1, 1)
@@ -41,8 +45,8 @@ module.exports = function uiWindow (uiPath, opts, config) {
         h('title', title)
       )
       require('${uiPath}')(${JSON.stringify(config)})
-    `)
-  })
+    `
+  }
 
   win.webContents.on('will-navigate', function (e, url) {
     e.preventDefault()
