@@ -2,11 +2,11 @@ const join = require('./lib/join')
 
 module.exports = function (appDir) {
   const core = [
-    'ssb-server/plugins/master',
-    'ssb-server/plugins/local',
-    'ssb-server/plugins/unix-socket', // in case config includes sockets
-    'ssb-server/plugins/no-auth', // in case config includes sockets
-    'ssb-server/plugins/logging'
+    'ssb-master',
+    'ssb-local',
+    'ssb-unix-socket', // in case config includes sockets
+    'ssb-no-auth', // in case config includes sockets
+    'ssb-logging'
   ]
 
   return [
