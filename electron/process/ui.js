@@ -22,7 +22,7 @@ module.exports = function uiWindow (uiPath, opts = {}, config) {
     minWidth: 800,
 
     autoHideMenuBar: true,
-    frame: true, // !process.env.FRAME,
+    frame: process.env.ELECTRON_FRAME !== 'false',
     // titleBarStyle: 'hidden',
     backgroundColor: '#fff',
     icon: '../assets/icon.png' // TODO may need fixing
