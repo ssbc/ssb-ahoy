@@ -1,4 +1,5 @@
 const { h, resolve, computed } = require('mutant')
+const { ipcRenderer } = require('electron')
 const ConfigPicker = require('./com/config-picker')
 const ConfigEditor = require('./com/config-editor')
 
@@ -8,7 +9,10 @@ function App (state) {
       hooks: [
         function (el) {
           document.body.addEventListener('keyup', ev => {
-            if (ev.keyCode === 13) NextStep()
+            if (ev.keyCode !== 13) return
+            if (ev.target.tagName !== 'BODY') return
+
+            Launch()
           })
         }
       ]
@@ -35,11 +39,17 @@ function App (state) {
             h('span', 'edit config')
           ]
         ),
-        h('button.initial-sync', {}, 'Initial Sync'),
+        h('button.initial-sync',
+          {
+            'ev-click': NextStep,
+            title: 'Initial Sync is for when you are setting up your account for the first time. It helps you get up to speed smoothly'
+          },
+          'Initial Sync'
+        ),
         computed(state.error, error => {
           const opts = error
             ? { disabled: true, title: error }
-            : { 'ev-click': NextStep, title: 'Launch app (⏎)' }
+            : { 'ev-click': Launch, title: 'Launch app (⏎)' }
 
           return h('button.launch-app', opts, 'Launch App')
         })
@@ -49,6 +59,12 @@ function App (state) {
 
   function NextStep () {
     if (resolve(state.error)) return
+    state.quitting.set(true)
+  }
+
+  function Launch () {
+    if (resolve(state.error)) return
+    ipcRenderer.send('ahoy:prepare-to-launch')
     state.quitting.set(true)
   }
 }
@@ -88,7 +104,7 @@ App.style = `
 
         span {
           font-family: monospace
-          font-size: 16px
+          font-size: 18px
           padding: 3px 5px
           // border: 1px solid black
           // border-radius: 2px

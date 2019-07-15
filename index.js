@@ -6,8 +6,8 @@ const Server = require('./electron/process/server')
 const UI = require('./electron/process/ui')
 const Plugins = require('./lib/build-plugins')
 const ConfigLocal = require('./lib/build-config-local')
-const MinimalPlugins = require('./plugins-minimal')
-const CheckSetUp = require('./lib/is-set-up')
+// const MinimalPlugins = require('./plugins-minimal')
+// const CheckSetUp = require('./lib/is-set-up') // not used currently
 const join = require('./lib/join')
 const log = require('./lib/log')
 
@@ -50,11 +50,11 @@ module.exports = function ahoy (opts, onReady = noop) {
       //   plugins: MinimalPlugins(appDir),
       //   uiPath: './views/replication/index.js' // TODO auto-progress?
       // },
-      // { // focus on indexing
-      //   config: configLocal,
-      //   plugins: Plugins({ plugins, appDir }),
-      //   uiPath: './views/indexing/index.js'
-      // },
+      { // focus on indexing
+        config: configLocal,
+        plugins: Plugins({ plugins, appDir }),
+        uiPath: './views/indexing/index.js'
+      },
       { // start user app
         title,
         config,
@@ -83,28 +83,26 @@ module.exports = function ahoy (opts, onReady = noop) {
       }
     })
 
-    // TODO move this to after first step ...
-    // or make first step include buttons to manualy choose
-    // CheckSetUp(config, appDir, (err, isSetUp) => {
-      // if (err) throw err
+    step() // Start up the next step
 
-      // if (isSetUp) state.step = state.steps.length - 2 // progress to (before) final step
+    ipcMain.once('ahoy:appname', (ev, appname, config) => {
+      state.steps = Steps(Config(appname))
+      // load the config fresh off just the appname to be safe...
 
-      step() // Start up the next step
+      state.loadingConfig = false
+    })
+    ipcMain.on('ahoy:prepare-to-launch', () => {
+      state.step = state.steps.length - 2 // progress to (before) final step
+    })
+    ipcMain.on('ahoy:step', step)
+    // TODO could check if an account is setup and offer different options
+    // in the config screen accordingly?
+    ipcMain.on('ahoy:log', log)
 
-      ipcMain.once('ahoy:appname', (ev, appname, config) => {
-        state.steps = Steps(Config(appname))
-        // load the config fresh off just the appname to be safe...
-
-        state.loadingConfig = false
-      })
-      ipcMain.on('ahoy:step', step)
-      ipcMain.on('ahoy:log', log)
-      electron.app.on('activate', function (e) {
-        // reopen the app when dock icon clicked on macOS
-        if (state.windows.ui) state.windows.ui.show()
-      })
-    // })
+    electron.app.on('activate', function (e) {
+      // reopen the app when dock icon clicked on macOS
+      if (state.windows.ui) state.windows.ui.show()
+    })
   })
 
   function step () {

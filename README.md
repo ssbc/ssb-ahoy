@@ -12,7 +12,7 @@ const ahoy = require('ssb-ahoy')
 const Config = require('ssb-config/inject')
 
 const plugins = [
-  'ssb-legacy-conn',
+  'ssb-conn',
   'ssb-replicate',
   'ssb-friends',
   'ssb-invite',

@@ -1,6 +1,10 @@
 const join = require('./lib/join')
 
 module.exports = function (appDir) {
+  // TODO !!!! // this file isn't currently used :)
+  throw new Error('plugins-minimal.js needs upgrading to ssb-server@15 , with standalone plugins modules!')
+  // TODO !!!!
+
   const core = [
     'ssb-server/plugins/master',
     'ssb-server/plugins/local',
@@ -13,9 +17,9 @@ module.exports = function (appDir) {
     ...core.map(makeElectronFriendly),
 
     // TODO check the plugins provided and use their versions if possible (rather than ssb-ahoy ones)
-    'ssb-legacy-conn',
+    'ssb-conn',
     'ssb-replicate',
-    // 'ssb-ebt', // NOTE - currently stalls during initial sync
+    'ssb-ebt',
     'ssb-friends',
     'ssb-invite'
   ]
