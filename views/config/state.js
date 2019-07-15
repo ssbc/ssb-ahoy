@@ -21,6 +21,7 @@ module.exports = function State (config) {
     },
     feedId: Value(),
     config: {
+      isEditing: Value(false),
       current: Value(),
       next: Value()
     },
@@ -52,7 +53,7 @@ module.exports = function State (config) {
 
   watch(state.appname.options, (options) => {
     if (!options) return
-    localStorage.ssbAhoyAppnames = JSON.stringify(options || ['ssb'])
+    localStorage.ssbAhoyAppnames = JSON.stringify(options || ['ssb']) // eslint-disable-line
   })
 
   watch(throttle(state.appname.new, 200), (name) => {
@@ -111,7 +112,7 @@ function validAppname (name, cb) {
 
 function loadStoredAppnames (state) {
   const appnames = ['ssb']
-    .concat(JSON5.parse(localStorage.ssbAhoyAppnames || '[]'))
+    .concat(JSON5.parse(localStorage.ssbAhoyAppnames || '[]')) // eslint-disable-line
 
   appnames.forEach(name => {
     validAppname(name, (_, valid) => {

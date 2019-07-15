@@ -1,4 +1,4 @@
-const { h, Value, computed, when, throttle } = require('mutant')
+const { h, computed, when, throttle } = require('mutant')
 const JSON5 = require('json5')
 const Spinner = require('./spinner')
 
@@ -11,16 +11,9 @@ e.g.
 }
 `
 function ConfigEditor ({ config, loading, saving, error }) {
-  const showEditor = Value(false)
-
   return h('ConfigEditor', [
-    h('label', { 'ev-click': () => showEditor.set(!showEditor()) }, [
-      h('i.fa.fa-cog'),
-      ' ',
-      h('span', 'Edit config')
-    ]),
     h('textarea', {
-      'className': when(showEditor, '', '-hidden'),
+      'className': when(config.isEditing, '', '-hidden'),
       'placeholder': placeholder,
       'value': computed(config.current, c => JSON5.stringify(c, null, 2)),
       'ev-input': (ev) => setConfigNext(ev.target.value)
