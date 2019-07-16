@@ -161,7 +161,7 @@ module.exports = function ahoy (opts, onReady = noop) {
 
     log('(main) starting Server')
     state.windows.server = Server({ config, plugins, appDir })
-    ipcMain.once('server-started', StartUI)
+    ipcMain.once('server-started', cb)
   }
 
   function StartUI () {
