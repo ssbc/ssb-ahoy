@@ -45,15 +45,11 @@ module.exports = function ahoy (opts, onReady = noop) {
       {
         uiPath: './views/config/index.js'
       },
-      // { // focus of log replication
-      //   config: configLocal,
-      //   plugins: MinimalPlugins(appDir),
-      //   uiPath: './views/replication/index.js' // TODO auto-progress?
-      // },
-      { // focus on indexing
+      { // replication + indexing (locally)
         config: configLocal,
+        // plugins: MinimalPlugins(appDir), // TODO maybe seperate replication + indexing
         plugins: Plugins({ plugins, appDir }),
-        uiPath: './views/indexing/index.js'
+        uiPath: './views/replication/index.js'
       },
       { // start user app
         title,

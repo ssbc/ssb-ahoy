@@ -3,7 +3,7 @@ const { ipcRenderer } = require('electron')
 const ConfigPicker = require('./com/config-picker')
 const ConfigEditor = require('./com/config-editor')
 
-function App (state) {
+function App (state, config) {
   return h('App',
     {
       hooks: [
