@@ -2,6 +2,10 @@
   "name": "ssb-ahoy",
   "version": "1.1.2",
   "description": "handle the initial sync as you join scuttlebutt for the first time",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/ssbc/ssb-ahoy.git"
+  },
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
