@@ -5,7 +5,7 @@ const join = require('../../lib/join')
 
 function validURL (str) {
   var pattern = new RegExp(
-    '^(https?:\\/\\/)?' + // protocol
+    '^(http?:\\/\\/)?' + // protocol
     '((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|' + // domain name
     '((\\d{1,3}\\.){3}\\d{1,3}))' + // OR ip (v4) address
     '(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*' + // port and path
