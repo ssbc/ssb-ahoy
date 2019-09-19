@@ -4,6 +4,7 @@ const path = require('path')
 const join = require('../../lib/join')
 
 function validURL (str) {
+  console.log('STRING', str)
   const split = str.split(':')
   if (split && split[0] && split[0] === 'http') {
     return true
@@ -47,6 +48,7 @@ module.exports = function uiWindow (uiPath, opts = {}, config) {
     e.preventDefault()
     electron.shell.openExternal(url)
   })
+  console.log('uiPath', uiPath)
   if (validURL(uiPath)) {
     console.log('IS URL')
     win.loadURL(uiPath)
