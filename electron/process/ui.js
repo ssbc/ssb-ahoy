@@ -43,10 +43,20 @@ module.exports = function uiWindow (uiPath, opts = {}, config) {
 
   var win = new electron.BrowserWindow(opts)
   windowState.manage(win)
+  win.webContents.on('will-navigate', function (e, url) {
+    e.preventDefault()
+    electron.shell.openExternal(url)
+  })
+
+  win.webContents.on('new-window', function (e, url) {
+    e.preventDefault()
+    electron.shell.openExternal(url)
+  })
   if (validURL(uiPath)) {
     console.log('IS URL')
     win.loadURL(uiPath)
   } else {
+    console.log('NOT URL')
     uiPath = join('../..', uiPath)
     win.webContents.on('dom-ready', function () {
       win.webContents.executeJavaScript(Script(uiPath, opts, config))
@@ -65,17 +75,8 @@ module.exports = function uiWindow (uiPath, opts = {}, config) {
       `
     }
 
-    win.webContents.on('will-navigate', function (e, url) {
-      e.preventDefault()
-      electron.shell.openExternal(url)
-    })
-
-    win.webContents.on('new-window', function (e, url) {
-      e.preventDefault()
-      electron.shell.openExternal(url)
-    })
-
     win.loadURL('file://' + path.join(__dirname, '../assets/base.html'))
   }
+
   return win
 }
