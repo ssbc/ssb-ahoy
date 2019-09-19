@@ -4,16 +4,11 @@ const path = require('path')
 const join = require('../../lib/join')
 
 function validURL (str) {
-  var pattern = new RegExp(
-    '^(http?:\\/\\/)?' + // protocol
-    '((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|' + // domain name
-    '((\\d{1,3}\\.){3}\\d{1,3}))' + // OR ip (v4) address
-    '(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*' + // port and path
-    '(\\?[;&a-z\\d%_.~+=-]*)?' + // query string
-      '(\\#[-a-z\\d_]*)?$',
-    'i'
-  ) // fragment locator
-  return !!pattern.test(str)
+  const split = str.split(':')
+  if (split && split[0] && split[0] === 'http') {
+    return true
+  }
+  return false
 }
 
 module.exports = function uiWindow (uiPath, opts = {}, config) {
