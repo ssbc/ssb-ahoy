@@ -50,10 +50,9 @@ module.exports = function uiWindow (uiPath, opts = {}, config) {
   })
   console.log('uiPath', uiPath)
   const withoutDir = uiPath.split('../')[uiPath.split('../').length - 1]
-  console.log('withoutDir', withoutDir)
   if (validURL(withoutDir)) {
     console.log('IS URL')
-    win.loadURL(uiPath)
+    win.loadURL('http://localhost:8080')
   } else {
     uiPath = join('../..', uiPath)
     win.webContents.on('dom-ready', function () {
