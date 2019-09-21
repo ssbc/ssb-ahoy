@@ -20,9 +20,7 @@ module.exports = function serverWindow ({ config, plugins, appDir }) {
   var win = new electron.BrowserWindow(opts)
 
   win.webContents.on('dom-ready', function (ev) {
-    win.webContents.executeJavaScript(
-      script({ config, plugins, appDir })
-    )
+    win.webContents.executeJavaScript(script({ config, plugins, appDir }))
   })
 
   win.webContents.on('will-navigate', function (e, url) {
@@ -40,6 +38,7 @@ module.exports = function serverWindow ({ config, plugins, appDir }) {
 }
 
 function script ({ config, plugins = [], appDir }) {
+  console.log('appDir', appDir)
   return `
     var electron = require('electron')
     var h = require('mutant/h')

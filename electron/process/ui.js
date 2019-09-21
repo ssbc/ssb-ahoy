@@ -4,7 +4,6 @@ const path = require('path')
 const join = require('../../lib/join')
 
 function validURL (str) {
-  console.log('STRING', str)
   const split = str.split(':')
   if (split && split[0] && split[0] === 'http') {
     return true
@@ -53,7 +52,6 @@ module.exports = function uiWindow (uiPath, opts = {}, config) {
     console.log('IS URL')
     win.loadURL(uiPath)
   } else {
-    console.log('NOT URL')
     uiPath = join('../..', uiPath)
     win.webContents.on('dom-ready', function () {
       win.webContents.executeJavaScript(Script(uiPath, opts, config))
