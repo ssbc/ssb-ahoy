@@ -38,7 +38,6 @@ module.exports = function serverWindow ({ config, plugins, appDir }) {
 }
 
 function script ({ config, plugins = [], appDir }) {
-  console.log('appDir', appDir, config)
   return `
     var electron = require('electron')
     var h = require('mutant/h')
