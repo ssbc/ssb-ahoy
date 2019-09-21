@@ -49,7 +49,7 @@ module.exports = function uiWindow (uiPath, opts = {}, config) {
     electron.shell.openExternal(url)
   })
   console.log('uiPath', uiPath)
-  const withoutDir = str.split('../')[str.split('../').length - 1]
+  const withoutDir = uiPath.split('../')[uiPath.split('../').length - 1]
   console.log('withoutDir', withoutDir)
   if (validURL(withoutDir)) {
     console.log('IS URL')
