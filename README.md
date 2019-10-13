@@ -30,18 +30,15 @@ const plugins = [
   'ssb-suggest'
 ]
 
-ahoy(
-  {
-    title: 'Patchbay',
-    config: Config('ssb-test-account'),
-    plugins,
-    appPath: './app.js', // entry point to your main app
-    onReady: (state) => {
-      console.log('welcome aboard')
-      console.log(state)
-    }
-  },
-)
+ahoy({
+  title: 'Patchbay',
+  plugins,
+  appPath: './app.js', // entry point to your main app
+  onReady: (state) => {
+    console.log('welcome aboard')
+    console.log(state)
+  }
+})
 ```
 
 ```json

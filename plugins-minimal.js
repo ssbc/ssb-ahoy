@@ -1,16 +1,14 @@
 const join = require('./lib/join')
 
 module.exports = function (appDir) {
-  // TODO !!!! // this file isn't currently used :)
-  throw new Error('plugins-minimal.js needs upgrading to ssb-server@15 , with standalone plugins modules!')
-  // TODO !!!!
+  // NOTE! this file isn't currently used, hasn't been tried recently :)
 
   const core = [
-    'ssb-server/plugins/master',
-    'ssb-server/plugins/local',
-    'ssb-server/plugins/unix-socket', // in case config includes sockets
-    'ssb-server/plugins/no-auth', // in case config includes sockets
-    'ssb-server/plugins/logging'
+    'master',
+    // 'local',
+    'unix-socket', // in case config includes sockets
+    'no-auth', // in case config includes sockets
+    'logging'
   ]
 
   return [
