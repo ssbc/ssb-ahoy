@@ -3,16 +3,7 @@ const WindowState = require('electron-window-state')
 const path = require('path')
 const join = require('../../lib/join')
 
-function validURL (str) {
-  console.log('str', str)
-  const split = str.split(':')
-  if (split && split[0] && split[0] === 'http') {
-    return true
-  }
-  return false
-}
-
-module.exports = function uiWindow (uiPath, opts = {}, config) {
+module.exports = function uiWindow ({ appPath, appURL }, opts = {}, config) {
   var windowState = WindowState({
     defaultWidth: 1024,
     defaultHeight: 768
@@ -48,32 +39,37 @@ module.exports = function uiWindow (uiPath, opts = {}, config) {
     e.preventDefault()
     electron.shell.openExternal(url)
   })
-  console.log('uiPath', uiPath)
-  const withoutDir = uiPath.split('../')[uiPath.split('../').length - 1]
-  if (validURL(withoutDir)) {
-    console.log('IS URL')
-    win.loadURL('http://localhost:8080')
-  } else {
-    uiPath = join('../..', uiPath)
-    win.webContents.on('dom-ready', function () {
-      win.webContents.executeJavaScript(Script(uiPath, opts, config))
-    })
 
-    function Script (uiPath, opts, config) {
-      return `
-        var electron = require('electron')
-        var h = require('mutant/h')
-        electron.webFrame.setVisualZoomLevelLimits(1, 1)
-        var title = ${JSON.stringify(opts.title || 'scuttlebutt ahoy!')}
-        document.documentElement.querySelector('head').appendChild(
-          h('title', title)
-        )
-        require('${uiPath}')(${JSON.stringify(config)})
-      `
-    }
+  if (appURL) win.loadURL(appURL)
+  else {
+    appPath = join('../..', appPath)
+    win.webContents.on('dom-ready', function () {
+      win.webContents.executeJavaScript(Script(appPath, opts, config))
+    })
 
     win.loadURL('file://' + path.join(__dirname, '../assets/base.html'))
   }
 
   return win
+}
+
+// function validURL (str) {
+//   const split = str.split(':')
+//   if (split && split[0] && split[0] === 'http') {
+//     return true
+//   }
+//   return false
+// }
+
+function Script (appPath, opts, config) {
+  return `
+    var electron = require('electron')
+    var h = require('mutant/h')
+    electron.webFrame.setVisualZoomLevelLimits(1, 1)
+    var title = ${JSON.stringify(opts.title || 'scuttlebutt ahoy!')}
+    document.documentElement.querySelector('head').appendChild(
+      h('title', title)
+    )
+    require('${appPath}')(${JSON.stringify(config)})
+  `
 }

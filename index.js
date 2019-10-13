@@ -14,16 +14,21 @@ const log = require('./lib/log')
 const Config = require('./lib/build-config')
 
 module.exports = function ahoy (opts, onReady = noop) {
-  const {
+  var {
     title,
     plugins = [],
     appDir = '../..',
-    uiPath
+    appPath,
+    appURL
   } = opts
 
   if (!Array.isArray(plugins)) throw Error('ssb-ahoy: plugins must be an array')
   if (plugins.length && typeof appDir !== 'string') throw Error('ssb-ahoy: expects valid appDir')
-  if (typeof uiPath !== 'string') throw Error('ssb-ahoy: expects valid uiPath')
+  if (!appPath && !appURL) throw Error('ssb-ahoy: expects EITHER appPath OR appURL')
+  if (appPath && appURL) throw Error('ssb-ahoy: expects EITHER appPath OR appURL, not both')
+  // TODO better checking of appPath and appURL
+  if (appPath && typeof appPath !== 'string') throw Error('ssb-ahoy: expects valid appPath')
+  if (appURL && typeof appURL !== 'string') throw Error('ssb-ahoy: expects valid appURL')
   if (typeof onReady !== 'function') throw Error('ssb-ahoy: expects valid onReady function')
 
   const state = {
@@ -43,19 +48,20 @@ module.exports = function ahoy (opts, onReady = noop) {
 
     return [
       {
-        uiPath: './views/config/index.js'
+        appPath: './views/config/index.js'
       },
       { // replication + indexing (locally)
         config: configLocal,
         // plugins: MinimalPlugins(appDir), // TODO maybe seperate replication + indexing
         plugins: Plugins({ plugins, appDir }),
-        uiPath: './views/replication/index.js'
+        appPath: './views/replication/index.js'
       },
       { // start user app
         title,
         config,
         plugins: Plugins({ plugins, appDir }),
-        uiPath: join(appDir, uiPath)
+        appURL: appURL || null,
+        appPath: appPath ? join(appDir, appPath) : null
       }
     ]
   }
@@ -166,10 +172,9 @@ module.exports = function ahoy (opts, onReady = noop) {
 
   function StartUI () {
     log('(main) starting UI')
-    const { uiPath, title, config } = state.steps[state.step]
-    const ui = UI(uiPath, { title }, config)
-    state.windows.ui = ui
+    const { appPath, appURL, title, config } = state.steps[state.step]
 
+    const ui = UI({ appPath, appURL }, { title }, config)
     ui.setSheetOffset(40)
     ui.on('close', function (e) {
       if (process.platform === 'darwin') {
@@ -185,11 +190,17 @@ module.exports = function ahoy (opts, onReady = noop) {
       //   ui.hide()
       // }
     })
+    state.windows.ui = ui
     ui.on('closed', function () {
       state.windows.ui = null
     })
 
-    if (state.step === state.steps.length - 1) onReady({ windows: state.windows })
+    if (state.step === state.steps.length - 1) {
+      onReady({
+        windows: state.windows,
+        config
+      })
+    }
   }
 }
 

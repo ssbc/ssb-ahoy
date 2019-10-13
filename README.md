@@ -35,7 +35,7 @@ ahoy(
     title: 'Patchbay',
     config: Config('ssb-test-account'),
     plugins,
-    uiPath: './app.js' // entry point to your main app
+    appPath: './app.js' // entry point to your main app
   },
   (state) => {
     console.log('welcome aboard')
@@ -63,8 +63,13 @@ ahoy(
 - `title` - *String* (optional) the title to be attached to the visible window
 - `config` - *Object* valid config for starting and connecting to an `ssb-server`, see [ssb-config](www.github.com/ssbc/ssb-config). Must include keys
 - `plugins` - *Array* (optional) a list of the names of plugins you'd like to get ahoy to run indexes of for you
-- `uiPath` - *String* string which points to the ui entry point of your app. This is expected to be a function and will be passed a copy of the `config` (so it can connect to the server that's been started!)
-- `appDir` - *String* (optional) the relative path to your app root _from the ssb-ahoy module_. Generally just don't touch this, you don't want to know
+- `appPath` | `appURL` - *String* (only one of these)
+  - `appPath` - the relative path to the entry points of your app, from the root of your app repo. The entry point is expected to export function that accepts a copy of the `config` (so it can connect to the server that's been started!) and is expected to handle attaching some UI to the page.
+  - `appURL` - points to a URL for your app. This is really useful for things like webpack dev-servers (e.g. can be `http://localhost:8080` or `\`
+`file://${__dirname}/index.html\``)
+- `appDir` - *String* (optional) the relative path to your app root _**from** the ssb-ahoy module_. Generally just don't touch this, it's only really used when symlinking `ssb-ahoy` in ... you don't want to know :(
+  "private": true,
+
 
 `onReady`- a callback which is run after ahoy hands over to your main app. Is passed some state data, e.g. `windows` (ui, server)
 
