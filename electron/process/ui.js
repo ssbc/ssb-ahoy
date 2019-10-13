@@ -53,14 +53,6 @@ module.exports = function uiWindow ({ appPath, appURL }, opts = {}, config) {
   return win
 }
 
-// function validURL (str) {
-//   const split = str.split(':')
-//   if (split && split[0] && split[0] === 'http') {
-//     return true
-//   }
-//   return false
-// }
-
 function Script (appPath, opts, config) {
   return `
     var electron = require('electron')
