@@ -4,6 +4,13 @@ An onboarding mini-app - gets you all set up, and caught up on the gossip before
 
 You currently need to be on the same network as another peer (this version has to start with local peer recplication)
 
+## Requirements
+
+You must have the following modules installed in your application:
+- `ssb-server` (probably version 15 or higher)
+- `ssb-master`
+- `ssb-unix-socket` + `ssb-no-auth`
+
 ## Example usage
 
 ```js
