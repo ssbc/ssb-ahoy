@@ -5,7 +5,7 @@ const pull = require('pull-stream')
 const Abortable = require('pull-abortable')
 
 const getStatus = require('../../lib/get-status')
-const log = require('../../lib/log')
+const log = require('../../lib/log').bind(null, 'ui')
 
 const LOOP_PERIOD = 1e3
 
@@ -55,7 +55,7 @@ module.exports = function State (config) {
       if (!quitting) return
 
       server.close()
-      log('(ui) SENDING  >> ahoy:step')
+      log('SENDING  >> ahoy:step')
       ipcRenderer.send('ahoy:step')
     })
   })

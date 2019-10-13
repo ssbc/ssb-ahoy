@@ -9,7 +9,7 @@ const ConfigLocal = require('./lib/build-config-local')
 // const MinimalPlugins = require('./plugins-minimal')
 // const CheckSetUp = require('./lib/is-set-up') // not used currently
 const join = require('./lib/join')
-const log = require('./lib/log')
+const log = require('./lib/log').bind(null, 'main')
 
 const Config = require('./lib/build-config')
 
@@ -74,7 +74,7 @@ module.exports = function ahoy (opts, onReady = noop) {
       if (state.isStepping) e.preventDefault()
       else {
         state.quitting = true
-        log('(main) quitting')
+        log('quitting')
       }
     })
 
@@ -119,7 +119,7 @@ module.exports = function ahoy (opts, onReady = noop) {
       clearServer(() => {
         clearUI()
 
-        console.log('# ---------------')
+        console.log('  ---------------')
         StartNextStep() // start next server, then start next UI
       })
     }
@@ -128,10 +128,10 @@ module.exports = function ahoy (opts, onReady = noop) {
   function clearServer (cb) {
     if (!state.windows.server) return cb() // this is a UI-only based step
 
-    log('(main) clearing Server')
+    log('clearing Server')
     state.windows.server.webContents.send('server-close')
     ipcMain.once('server-closed', () => {
-      log('(main) RECEIVED << server-closed')
+      log('RECEIVED << server-closed')
 
       state.windows.server = null
       cb()
@@ -140,7 +140,7 @@ module.exports = function ahoy (opts, onReady = noop) {
   function clearUI () {
     if (!state.windows.ui) return
 
-    log('(main) clearing UI')
+    log('clearing UI')
 
     state.windows.ui.close()
     // state.windows.ui.hide()
@@ -165,13 +165,13 @@ module.exports = function ahoy (opts, onReady = noop) {
     if (!config && !plugins) return cb() // because a UI-only based step
     // if (!plugins) return cb() // because a UI-only based step
 
-    log('(main) starting Server')
+    log('starting Server')
     state.windows.server = Server({ config, plugins, appDir })
     ipcMain.once('server-started', cb)
   }
 
   function StartUI () {
-    log('(main) starting UI')
+    log('starting UI')
     const { appPath, appURL, title, config } = state.steps[state.step]
 
     const ui = UI({ appPath, appURL }, { title }, config)

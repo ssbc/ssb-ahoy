@@ -10,7 +10,7 @@ const isEqual = require('lodash.isequal')
 const clone = require('lodash.clone')
 const merge = require('lodash.merge')
 
-const log = require('../../lib/log')
+const log = require('../../lib/log').bind(null, 'ui')
 
 module.exports = function State (config) {
   const state = {
@@ -96,7 +96,7 @@ module.exports = function State (config) {
 
     ipcRenderer.send('ahoy:appname', resolve(state.appname.selected)) // could send config too...
 
-    log('(ui) SENDING  >> ahoy:step')
+    log('SENDING  >> ahoy:step')
     ipcRenderer.send('ahoy:step')
   })
 

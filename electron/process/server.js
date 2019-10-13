@@ -40,30 +40,28 @@ module.exports = function serverWindow ({ config, plugins, appDir }) {
 function script ({ config, plugins = [], appDir }) {
   return `
     var electron = require('electron')
-    var h = require('mutant/h')
     var fs = require('fs')
     var path = require('path')
+    var Client = require('ssb-client')
     var join = require('../../lib/join')
-    var log = require('../../lib/log')
+    var log = require('../../lib/log').bind(null, 'server')
     var config = ${JSON.stringify(config)}
 
     var server
     
     electron.webFrame.setVisualZoomLevelLimits(1, 1)
-    document.documentElement.querySelector('head').appendChild(
-      h('title', 'InitialSync')
-    )
 
     startAhoyServer()
 
     electron.ipcRenderer.once('server-close', () => {
-      log('(server) RECEIVED << server-close')
+      log('RECEIVED << server-close')
       server.close()
       electron.ipcRenderer.send('server-closed')
+
+      // NOTE this should work but it doesn't reliably
       // server.close(() => {
       //   electron.ipcRenderer.send('server-closed')
       // })
-      // NOTE this should work but it doesn't reliably
     })
 
     function startAhoyServer () {
@@ -77,7 +75,23 @@ function script ({ config, plugins = [], appDir }) {
         JSON.stringify(server.getManifest())
       )
 
-      electron.ipcRenderer.send('server-started')
+      sendThumbsUp()
+    }
+
+    var failures = 0
+    function sendThumbsUp () {
+      Client(config.keys, config, (err, sbot) => {
+        if (err) {
+          if (failures++ > 7) throw err
+
+          log('server not ready... , retrying (' + failures + ')')
+          setTimeout(sendThumbsUp, 500)
+          return
+        }
+
+        sbot.close() // close this remote connection (not the actual server)
+        electron.ipcRenderer.send('server-started')
+      })
     }
   `
 }
