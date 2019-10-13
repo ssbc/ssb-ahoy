@@ -13,13 +13,15 @@ const log = require('./lib/log').bind(null, 'main')
 
 const Config = require('./lib/build-config')
 
-module.exports = function ahoy (opts, onReady = noop) {
+module.exports = function ahoy (opts) {
   var {
     title,
     plugins = [],
+    config = null,
     appDir = '../..',
     appPath,
-    appURL
+    appURL,
+    onReady = noop
   } = opts
 
   if (!Array.isArray(plugins)) throw Error('ssb-ahoy: plugins must be an array')
@@ -32,15 +34,27 @@ module.exports = function ahoy (opts, onReady = noop) {
   if (typeof onReady !== 'function') throw Error('ssb-ahoy: expects valid onReady function')
 
   const state = {
-    loadingConfig: false,
+    loadingConfig: false, // may not be used
     isStepping: false,
-    steps: Steps(),
+    steps: config ? JustAppStep(config) : Steps(config),
     step: -1,
     windows: {
       server: null,
       ui: null
     },
     quitting: false
+  }
+
+  function JustAppStep (config) {
+    return [
+      { // start user app
+        title,
+        config,
+        plugins: Plugins({ plugins, appDir }),
+        appURL: appURL || null,
+        appPath: appPath ? join(appDir, appPath) : null
+      }
+    ]
   }
 
   function Steps (config) {

@@ -35,12 +35,12 @@ ahoy(
     title: 'Patchbay',
     config: Config('ssb-test-account'),
     plugins,
-    appPath: './app.js' // entry point to your main app
+    appPath: './app.js', // entry point to your main app
+    onReady: (state) => {
+      console.log('welcome aboard')
+      console.log(state)
+    }
   },
-  (state) => {
-    console.log('welcome aboard')
-    console.log(state)
-  }
 )
 ```
 
@@ -57,21 +57,17 @@ ahoy(
 
 ## API
 
-### `ahoy(opts, onReady)`
+### `ahoy(opts)`
 
-`opts` *Object*
-- `title` - *String* (optional) the title to be attached to the visible window
-- `config` - *Object* valid config for starting and connecting to an `ssb-server`, see [ssb-config](www.github.com/ssbc/ssb-config). Must include keys
-- `plugins` - *Array* (optional) a list of the names of plugins you'd like to get ahoy to run indexes of for you
-- `appPath` | `appURL` - *String* (only one of these)
+`opts` *Object* with properties:
+- `plugins` - *[String]* an array of `ssb-server` plugins names (as strings) you'd like ahoy to run for you
+- `appURL` | `appPath` - *String* (only one of these)
+  - `appURL` - points to a URL for your app. This is really useful for things like webpack dev-servers (e.g. can be `http://localhost:8080` or `\`file://${__dirname}/index.html\``)
   - `appPath` - the relative path to the entry points of your app, from the root of your app repo. The entry point is expected to export function that accepts a copy of the `config` (so it can connect to the server that's been started!) and is expected to handle attaching some UI to the page.
-  - `appURL` - points to a URL for your app. This is really useful for things like webpack dev-servers (e.g. can be `http://localhost:8080` or `\`
-`file://${__dirname}/index.html\``)
+- `title` - *String* (optional) the title to be attached to the visible window
+- `config` - *Object* (optional) if this is supplied, `ssb-ahoy`'s config selector + editor will be skipped and you'll be jumped straight to launching your app. Must be valid config for starting and connecting to an `ssb-server` and include `config.keys` (see also: [ssb-config](www.github.com/ssbc/ssb-config))
 - `appDir` - *String* (optional) the relative path to your app root _**from** the ssb-ahoy module_. Generally just don't touch this, it's only really used when symlinking `ssb-ahoy` in ... you don't want to know :(
-  "private": true,
-
-
-`onReady`- a callback which is run after ahoy hands over to your main app. Is passed some state data, e.g. `windows` (ui, server)
+- `onReady`- *Function* (optional) a callback which is run after ahoy hands over to your main app. Is passed some state data, e.g. `config`, `windows` (ui, server)
 
 ## The voyage map
 
