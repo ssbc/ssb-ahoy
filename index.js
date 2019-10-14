@@ -36,7 +36,7 @@ module.exports = function ahoy (opts) {
   const state = {
     loadingConfig: false, // may not be used
     isStepping: false,
-    steps: config ? JustAppStep(config) : Steps(config),
+    steps: config ? [ AppStep(config) ] : Steps(),
     step: -1,
     windows: {
       server: null,
@@ -45,39 +45,36 @@ module.exports = function ahoy (opts) {
     quitting: false
   }
 
-  function JustAppStep (config) {
-    return [
-      { // start user app
-        title,
-        config,
-        plugins: Plugins({ plugins, appDir }),
-        appURL: appURL || null,
-        appPath: appPath ? join(appDir, appPath) : null
-      }
-    ]
-  }
-
   function Steps (config) {
     const configLocal = config ? ConfigLocal(config) : false
 
     return [
+      // config picker + editor
       {
         appPath: './views/config/index.js'
       },
-      { // replication + indexing (locally)
+
+      // replication + indexing (locally)
+      {
         config: configLocal,
-        // plugins: MinimalPlugins(appDir), // TODO maybe seperate replication + indexing
+        // TODO maybe seperate replication + indexing
+        // plugins: MinimalPlugins(appDir),
         plugins: Plugins({ plugins, appDir }),
         appPath: './views/replication/index.js'
       },
-      { // start user app
-        title,
-        config,
-        plugins: Plugins({ plugins, appDir }),
-        appURL: appURL || null,
-        appPath: appPath ? join(appDir, appPath) : null
-      }
+
+      // the user provided app
+      AppStep(config)
     ]
+  }
+  function AppStep (config) {
+    return {
+      title,
+      config,
+      plugins: Plugins({ plugins, appDir }),
+      appURL: appURL || null,
+      appPath: appPath ? join(appDir, appPath) : null
+    }
   }
 
   electron.app.on('ready', () => {
