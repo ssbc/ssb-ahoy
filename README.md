@@ -7,9 +7,12 @@ You currently need to be on the same network as another peer (this version has t
 ## Requirements
 
 You must have the following modules installed in your application:
-- `ssb-server` (probably version 15 or higher)
+- `secret-stack` (`^6.2.1`)
+- `ssb-db`
 - `ssb-master`
 - `ssb-unix-socket` + `ssb-no-auth`
+
+NOTE we no longer use `ssb-server` (this is just `secret-stack` + `ssb-db` + some CLI tools)
 
 ## Example usage
 

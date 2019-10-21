@@ -65,7 +65,11 @@ function script ({ config, plugins = [], appDir }) {
     })
 
     function startAhoyServer () {
-      var Server = require(join('../..', '${appDir}', 'node_modules/ssb-server')).createSsbServer()
+      var SecretStack = require(join('../..', '${appDir}', 'node_modules/secret-stack'))
+      var SSB = require(join('../..', '${appDir}', 'node_modules/ssb-db'))
+
+      var Server = SecretStack({})
+        .use(SSB)
         ${plugins.map(name => `.use(require('${name}'))`).join('')}
 
       server = Server(config)
