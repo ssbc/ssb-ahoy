@@ -1,6 +1,6 @@
 {
   "name": "ssb-ahoy",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "description": "handle the initial sync as you join scuttlebutt for the first time",
   "repository": {
     "type": "git",
