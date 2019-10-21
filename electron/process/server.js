@@ -1,5 +1,6 @@
 const electron = require('electron')
 const path = require('path')
+const join = require('../../lib/join')
 
 module.exports = function serverWindow ({ config, plugins, appDir }) {
   const opts = {
@@ -38,6 +39,8 @@ module.exports = function serverWindow ({ config, plugins, appDir }) {
 }
 
 function script ({ config, plugins = [], appDir }) {
+  const manifestPath = join(config.path, 'manifest.json')
+
   return `
     var electron = require('electron')
     var fs = require('fs')
@@ -73,13 +76,18 @@ function script ({ config, plugins = [], appDir }) {
         ${plugins.map(name => `.use(require('${name}'))`).join('')}
 
       server = Server(config)
+      const manifest = server.getManifest()
 
-      fs.writeFileSync(
-        '${path.join(config.path, 'manifest.json')}',
-        JSON.stringify(server.getManifest())
+      fs.writeFile(
+        '${manifestPath}',
+        JSON.stringify(manifest, null, 2),
+        (err) => {
+          if (err) throw err
+
+          config.manifest = manifest
+          sendThumbsUp()
+        }
       )
-
-      sendThumbsUp()
     }
 
     var failures = 0
@@ -94,7 +102,7 @@ function script ({ config, plugins = [], appDir }) {
         }
 
         sbot.close() // close this remote connection (not the actual server)
-        electron.ipcRenderer.send('server-started')
+        electron.ipcRenderer.send('server-started', config.manifest)
       })
     }
   `

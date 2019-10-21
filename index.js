@@ -44,6 +44,9 @@ module.exports = function ahoy (opts) {
     },
     quitting: false
   }
+  var appName = 'ssb'
+  // state, but only in the case which config was not set
+  // this will inform where files are stored and manifest loaded from e.g. ~/.ssb
 
   function Steps (config) {
     const configLocal = config ? ConfigLocal(config) : false
@@ -78,7 +81,7 @@ module.exports = function ahoy (opts) {
   }
 
   electron.app.on('ready', () => {
-    // TODO check this is even used. I think this needs to be called in the UI windows?
+    // TODO check this is used. I think this needs to be called in the UI windows?
     Menu()
 
     electron.app.on('before-quit', function (e) {
@@ -99,10 +102,8 @@ module.exports = function ahoy (opts) {
     step() // Start up the next step
 
     ipcMain.once('ahoy:appname', (ev, appname, config) => {
-      state.steps = Steps(Config(appname))
-      // load the config fresh off just the appname to be safe...
-
-      state.loadingConfig = false
+      appName = appname
+      // state.loadingConfig = false
     })
     ipcMain.on('ahoy:prepare-to-launch', () => {
       state.step = state.steps.length - 2 // progress to (before) final step
@@ -178,7 +179,20 @@ module.exports = function ahoy (opts) {
 
     log('starting Server')
     state.windows.server = Server({ config, plugins, appDir })
-    ipcMain.once('server-started', cb)
+    ipcMain.once('server-started', (ev, manifest) => {
+      log('manifest', JSON.stringify(manifest, null, 2))
+
+      // each time server is started with a particular set of plugins,
+      // it writes a new manifest.json which we need to update the current step config with
+      // so that the UI knows how to connect to the Server
+
+      if (state.steps[state.step].hasOwnProperty('plugins')) {
+        if (config) config.manifest = manifest
+        state.steps[state.step].config = config || Config(appName)
+      }
+
+      cb()
+    })
   }
 
   function StartUI () {
@@ -209,7 +223,7 @@ module.exports = function ahoy (opts) {
     if (state.step === state.steps.length - 1) {
       onReady({
         windows: state.windows,
-        config
+        config: state.steps[state.step].config
       })
     }
   }
