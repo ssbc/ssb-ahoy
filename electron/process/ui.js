@@ -27,6 +27,9 @@ module.exports = function uiWindow ({ appPath, appURL }, opts = {}, config) {
     },
     opts
   )
+  if (appURL) {
+    opts.webPreferences = { nodeIntegration: false }
+  }
 
   var win = new electron.BrowserWindow(opts)
   windowState.manage(win)
