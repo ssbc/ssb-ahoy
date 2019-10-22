@@ -18,8 +18,8 @@ module.exports = function (appDir) {
     'ssb-conn',
     'ssb-replicate',
     'ssb-ebt',
-    'ssb-friends',
-    'ssb-invite'
+    'ssb-friends'
+    // 'ssb-invite'
   ]
 
   function makeElectronFriendly (plugin) {
