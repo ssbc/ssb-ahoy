@@ -180,8 +180,6 @@ module.exports = function ahoy (opts) {
     log('starting Server')
     state.windows.server = Server({ config, plugins, appDir })
     ipcMain.once('server-started', (ev, manifest) => {
-      log('manifest', JSON.stringify(manifest, null, 2))
-
       // each time server is started with a particular set of plugins,
       // it writes a new manifest.json which we need to update the current step config with
       // so that the UI knows how to connect to the Server
