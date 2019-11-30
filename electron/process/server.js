@@ -46,6 +46,7 @@ function script ({ config, plugins = [], appDir }) {
     var fs = require('fs')
     var path = require('path')
     var Client = require('ssb-client')
+    var caps = rerquire('ssb-caps')
     var join = require('../../lib/join')
     var log = require('../../lib/log').bind(null, 'server')
     var config = ${JSON.stringify(config)}
@@ -71,7 +72,7 @@ function script ({ config, plugins = [], appDir }) {
       var SecretStack = require(join('../..', '${appDir}', 'node_modules/secret-stack'))
       var SSB = require(join('../..', '${appDir}', 'node_modules/ssb-db'))
 
-      var Server = SecretStack({})
+      var Server = SecretStack({ caps: { shs: Buffer.from(caps.shs, 'base64') } })
         .use(SSB)
         ${plugins.map(name => `.use(require('${name}'))`).join('')}
 
