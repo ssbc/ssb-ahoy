@@ -5,13 +5,13 @@ const Menu = require('./electron/menu')
 const Server = require('./electron/process/server')
 const UI = require('./electron/process/ui')
 const Plugins = require('./lib/build-plugins')
-const ConfigLocal = require('./lib/build-config-local')
 // const MinimalPlugins = require('./plugins-minimal')
 // const CheckSetUp = require('./lib/is-set-up') // not used currently
 const join = require('./lib/join')
 const log = require('./lib/log').bind(null, 'main')
 
 const Config = require('./lib/build-config')
+const ConfigLocal = require('./lib/build-config-local')
 
 module.exports = function ahoy (opts) {
   var {
@@ -103,6 +103,7 @@ module.exports = function ahoy (opts) {
 
     ipcMain.once('ahoy:appname', (ev, appname, config) => {
       appName = appname
+      state.steps = Steps(Config(appName))
       // state.loadingConfig = false
     })
     ipcMain.on('ahoy:prepare-to-launch', () => {
@@ -186,6 +187,12 @@ module.exports = function ahoy (opts) {
 
       if (state.steps[state.step].hasOwnProperty('plugins')) {
         if (config) config.manifest = manifest
+        else {
+          // TEMP
+          throw new Error('REALLY? You should not be seeing this!')
+          // because how would the server have started without config?
+          // TODO fix this up
+        }
         state.steps[state.step].config = config || Config(appName)
       }
 
