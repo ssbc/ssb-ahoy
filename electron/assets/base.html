@@ -24,8 +24,13 @@
       // redirect errors to stderr
       window.addEventListener('error', function (e) {
         e.preventDefault()
+
         if (e.error && e.error.stack) console.error(e.error.stack)
         else if (e.error) console.error('Uncaught ' + e.error)
+        else if (e.message && e.message.startsWith('ResizeObserver')) {
+          // HACK: Fix for ResizeObserver freeze / crash.
+          return
+        }
         else console.error(e) // e.g. some ResizeObserver errors have e.error = null !
       })
     </script>
