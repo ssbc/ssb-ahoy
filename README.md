@@ -12,7 +12,7 @@ You must have the following modules installed in your application:
 - `ssb-master`
 - `ssb-unix-socket` + `ssb-no-auth`
 
-NOTE we no longer use `ssb-server` (this is just `secret-stack` + `ssb-db` + some CLI tools)
+:warning: **NOTE** we no longer use `ssb-server` (this is just `secret-stack` + `ssb-db` + some CLI tools)
 
 ## Example usage
 
