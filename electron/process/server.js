@@ -16,7 +16,10 @@ module.exports = function serverWindow ({ config, plugins, appDir }) {
     skipTaskbar: true,
     useContentSize: true,
     height: 150,
-    width: 150
+    width: 150,
+    webPreferences: {
+      nodeIntegration: true
+    }
   }
   var win = new electron.BrowserWindow(opts)
 

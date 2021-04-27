@@ -23,7 +23,10 @@ module.exports = function uiWindow ({ appPath, appURL }, opts = {}, config) {
       frame: process.env.ELECTRON_FRAME !== 'false',
       // titleBarStyle: 'hidden',
       backgroundColor: '#fff',
-      icon: '../assets/icon.png' // TODO may need fixing
+      icon: '../assets/icon.png', // TODO may need fixing
+      webPreferences: {
+        nodeIntegration: true
+      }
     },
     opts
   )
