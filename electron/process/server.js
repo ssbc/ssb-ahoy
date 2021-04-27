@@ -17,9 +17,7 @@ module.exports = function serverWindow ({ config, plugins, appDir }) {
     useContentSize: true,
     height: 150,
     width: 150,
-    webPreferences: {
-      nodeIntegration: true
-    }
+    webPreferences: { nodeIntegration: true }
   }
   const win = new electron.BrowserWindow(opts)
 
