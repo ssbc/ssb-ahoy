@@ -4,7 +4,7 @@ const path = require('path')
 const join = require('../../lib/join')
 
 module.exports = function uiWindow ({ appPath, appURL }, opts = {}, config) {
-  var windowState = WindowState({
+  const windowState = WindowState({
     defaultWidth: 1024,
     defaultHeight: 768
   })
@@ -34,7 +34,7 @@ module.exports = function uiWindow ({ appPath, appURL }, opts = {}, config) {
     opts.webPreferences = { nodeIntegration: false }
   }
 
-  var win = new electron.BrowserWindow(opts)
+  const win = new electron.BrowserWindow(opts)
   windowState.manage(win)
   win.webContents.on('will-navigate', function (e, url) {
     e.preventDefault()

@@ -105,7 +105,7 @@ Bonus:
 
 ## Development
 
-:warning: **WARNING** - because of limitations in electron, I've had to use `executeJavascript` which only takes strings.
+:warning: **WARNING** - because of limitations in electron, I've had to use `executeJavaScript` which only takes strings.
 In terms of requiring plugins, this has meant some kinda nasty hacks so that ssb-ahoy doesn't have to maintain plugins.
 
 You are likely to have problems if you try to symlink this module into place.

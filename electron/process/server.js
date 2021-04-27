@@ -21,7 +21,7 @@ module.exports = function serverWindow ({ config, plugins, appDir }) {
       nodeIntegration: true
     }
   }
-  var win = new electron.BrowserWindow(opts)
+  const win = new electron.BrowserWindow(opts)
 
   win.webContents.on('dom-ready', function (ev) {
     win.webContents.executeJavaScript(script({ config, plugins, appDir }))

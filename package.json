@@ -17,7 +17,7 @@
   "author": "mixmix",
   "license": "AGPL-3.0",
   "dependencies": {
-    "electron": "^7.3.3",
+    "electron": "^8.5.5",
     "electron-default-menu": "^1.0.1",
     "electron-window-state": "^5.0.3",
     "font-awesome": "^4.7.0",
