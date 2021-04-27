@@ -65,6 +65,7 @@ function App (state, config) {
   function Launch () {
     if (resolve(state.error)) return
     ipcRenderer.send('ahoy:prepare-to-launch')
+      .catch(err => { console.trace(err) })
     state.quitting.set(true)
   }
 }

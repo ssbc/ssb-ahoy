@@ -95,9 +95,11 @@ module.exports = function State (config) {
     if (!quitting) return
 
     ipcRenderer.send('ahoy:appname', resolve(state.appname.selected)) // could send config too...
+      .catch(err => { console.trace(err) })
 
     log('SENDING  >> ahoy:step')
     ipcRenderer.send('ahoy:step')
+      .catch(err => { console.trace(err) })
   })
 
   return state

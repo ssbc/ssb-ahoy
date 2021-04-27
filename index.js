@@ -14,7 +14,7 @@ const Config = require('./lib/build-config')
 const ConfigLocal = require('./lib/build-config-local')
 
 module.exports = function ahoy (opts) {
-  var {
+  const {
     title,
     plugins = [],
     config = null,
@@ -36,7 +36,7 @@ module.exports = function ahoy (opts) {
   const state = {
     loadingConfig: false, // may not be used
     isStepping: false,
-    steps: config ? [ AppStep(config) ] : Steps(),
+    steps: config ? [AppStep(config)] : Steps(),
     step: -1,
     windows: {
       server: null,
@@ -44,7 +44,7 @@ module.exports = function ahoy (opts) {
     },
     quitting: false
   }
-  var appName = 'ssb'
+  let appName = 'ssb'
   // state, but only in the case which config was not set
   // this will inform where files are stored and manifest loaded from e.g. ~/.ssb
 
@@ -143,6 +143,7 @@ module.exports = function ahoy (opts) {
 
     log('clearing Server')
     state.windows.server.webContents.send('server-close')
+      .catch(err => { throw err })
     ipcMain.once('server-closed', () => {
       log('RECEIVED << server-closed')
 
@@ -185,7 +186,7 @@ module.exports = function ahoy (opts) {
       // it writes a new manifest.json which we need to update the current step config with
       // so that the UI knows how to connect to the Server
 
-      if (state.steps[state.step].hasOwnProperty('plugins')) {
+      if ('plugins' in state.steps[state.step]) {
         if (config) config.manifest = manifest
         else {
           // TEMP

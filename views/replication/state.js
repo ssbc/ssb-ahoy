@@ -57,6 +57,7 @@ module.exports = function State (config) {
       server.close()
       log('SENDING  >> ahoy:step')
       ipcRenderer.send('ahoy:step')
+        .catch(err => { console.trace(err) })
     })
   })
 

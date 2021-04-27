@@ -63,6 +63,7 @@ function Script (appPath, opts, config) {
     var h = require('mutant/h')
     electron.webFrame.setVisualZoomLevelLimits(1, 1)
     var title = ${JSON.stringify(opts.title || 'scuttlebutt ahoy!')}
+    // TODO replace with raw createElement
     document.documentElement.querySelector('head').appendChild(
       h('title', title)
     )

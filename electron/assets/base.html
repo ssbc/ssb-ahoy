@@ -20,7 +20,6 @@
         remoteError(...args)
       }
 
-      process.exit = electron.remote.app.quit
       // redirect errors to stderr
       window.addEventListener('error', function (e) {
         e.preventDefault()
@@ -33,6 +32,8 @@
         }
         else console.error(e) // e.g. some ResizeObserver errors have e.error = null !
       })
+
+      process.exit = electron.remote.app.quit
     </script>
   </body>
 </html>
