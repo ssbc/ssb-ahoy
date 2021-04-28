@@ -99,8 +99,6 @@ module.exports = function ahoy (opts) {
       }
     })
 
-    step() // Start up the next step
-
     ipcMain.once('ahoy:appname', (ev, appname, config) => {
       appName = appname
       state.steps = Steps(Config(appName))
@@ -112,12 +110,14 @@ module.exports = function ahoy (opts) {
     ipcMain.on('ahoy:step', step)
     // TODO could check if an account is setup and offer different options
     // in the config screen accordingly?
-    ipcMain.on('ahoy:log', log)
+    ipcMain.on('ahoy:log', (ev, msg) => log(msg))
 
     electron.app.on('activate', function (e) {
       // reopen the app when dock icon clicked on macOS
       if (state.windows.ui) state.windows.ui.show()
     })
+
+    step() // Start up the next step
   })
 
   function step () {

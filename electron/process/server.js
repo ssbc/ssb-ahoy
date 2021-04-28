@@ -2,24 +2,36 @@ const electron = require('electron')
 const path = require('path')
 const join = require('../../lib/join')
 
+const DEBUGGING = true // set to true to see backend console
+
 module.exports = function serverWindow ({ config, plugins, appDir }) {
   const opts = {
-    title: 'initial sync server',
-    show: false,
+    title: 'scuttlebutt server',
+    show: DEBUGGING,
     connect: false,
-    center: true,
-    fullscreen: false,
-    fullscreenable: false,
-    maximizable: false,
-    minimizable: false,
-    resizable: false,
+    // center: true,
+    // fullscreen: false,
+    // fullscreenable: false,
+    // maximizable: false,
+    // minimizable: false,
+    // resizable: false,
     skipTaskbar: true,
-    useContentSize: true,
-    height: 150,
-    width: 150,
-    webPreferences: { nodeIntegration: true }
+    // useContentSize: true,
+    // height: 150,
+    // width: 150,
+    webPreferences: {
+      nodeIntegration: true,
+      contextIsolation: false
+      // TODO mix 2021-04-28 : find way to enable contextIsolation
+      // ideally contextIsolation should be true (security)
+      // this means we cannot run executeJavaScript with require statements though
+      // preload: path.join(__dirname, '../preload.js')
+      // TODO mix 2021-04-28 explore preload
+      // consider writing all the code to be run (including plugins) to a file and just passing it to a static file and passing this to preload..., may involve way less path hacking
+    }
   }
   const win = new electron.BrowserWindow(opts)
+  if (DEBUGGING) win.webContents.openDevTools()
 
   win.webContents.on('dom-ready', function (ev) {
     win.webContents.executeJavaScript(script({ config, plugins, appDir }))
@@ -105,6 +117,7 @@ function script ({ config, plugins = [], appDir }) {
 
     var failures = 0
     function sendThumbsUp () {
+      electron.ipcRenderer.send('server-started', config.manifest)
       Client(config.keys, config, (err, client) => {
         if (err) {
           if (failures++ > 7) throw err

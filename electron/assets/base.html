@@ -3,24 +3,38 @@
   <head></head>
   <body>
     <script>
-      // redirect console to main process
-      var electron = require('electron')
+      // Redirect console to main process
+
+      // const electron = require('electron')
+      // not needed as contextIsolation false currently
+      electron.ipcRenderer.send('ahoy:log', 'ERROR!!!!')
+
+      // WIP mix 2021-04-28 : replace remote use with ipcRenderer.send 
+      // some of this would be good in preload, however can't use that when contextIsolation = false
+      // so perhaps put the redirect stuff in executeJavaScript
+
+      // var remoteLog = electron.remote.getGlobal('console').log
+      // var remoteError = electron.remote.getGlobal('console').error
+
+      // TODO mix 20201-04-28 : re-enable renderer logging
+      // if contextIsolation = true, require is not accessible,
+      // see https://www.electronjs.org/docs/tutorial/context-isolation
+
+
       var localLog = console.log
       var localError = console.error
-      var remoteLog = electron.remote.getGlobal('console').log
-      var remoteError = electron.remote.getGlobal('console').error
 
       console.log = function (...args) {
         localLog.apply(console, args)
-        remoteLog(...args)
+        // remoteLog(...args)
       }
 
       console.error = function (...args) {
         localError.apply(console, args)
-        remoteError(...args)
+        // remoteError(...args)
       }
 
-      // redirect errors to stderr
+      // Redirect errors to stderr
       window.addEventListener('error', function (e) {
         e.preventDefault()
 
@@ -33,7 +47,10 @@
         else console.error(e) // e.g. some ResizeObserver errors have e.error = null !
       })
 
-      process.exit = electron.remote.app.quit
+      // WIP mix 20201-04-28 : re-enable process.exitA?
+      // NOTE electron.remote has been deprecated, see @electron/remote
+      // process.exit = electron.remote.app.quit
+
     </script>
   </body>
 </html>
