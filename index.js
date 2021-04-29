@@ -8,7 +8,9 @@ const Plugins = require('./lib/build-plugins')
 // const MinimalPlugins = require('./plugins-minimal')
 // const CheckSetUp = require('./lib/is-set-up') // not used currently
 const join = require('./lib/join')
-const log = require('./lib/log').bind(null, 'main')
+const logger = require('./lib/log')
+const log = logger.bind(null, 'main')
+const logRemoteError = logger.bind(null, 'error')
 
 const Config = require('./lib/build-config')
 const ConfigLocal = require('./lib/build-config-local')
@@ -110,7 +112,8 @@ module.exports = function ahoy (opts) {
     ipcMain.on('ahoy:step', step)
     // TODO could check if an account is setup and offer different options
     // in the config screen accordingly?
-    ipcMain.on('ahoy:log', (ev, msg) => log(msg))
+    ipcMain.on('ahoy:remote-log', (ev, args) => console.log(...args))
+    ipcMain.on('ahoy:remote-error', (ev, err) => logRemoteError(err))
 
     electron.app.on('activate', function (e) {
       // reopen the app when dock icon clicked on macOS

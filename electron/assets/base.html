@@ -5,33 +5,24 @@
     <script>
       // Redirect console to main process
 
-      // const electron = require('electron')
-      // not needed as contextIsolation false currently
-      electron.ipcRenderer.send('ahoy:log', 'ERROR!!!!')
-
-      // WIP mix 2021-04-28 : replace remote use with ipcRenderer.send 
-      // some of this would be good in preload, however can't use that when contextIsolation = false
-      // so perhaps put the redirect stuff in executeJavaScript
-
-      // var remoteLog = electron.remote.getGlobal('console').log
-      // var remoteError = electron.remote.getGlobal('console').error
-
-      // TODO mix 20201-04-28 : re-enable renderer logging
-      // if contextIsolation = true, require is not accessible,
+      const remoteLog = (args) => electron.ipcRenderer.send('ahoy:remote-log', args) 
+      const remoteError = (err) => electron.ipcRenderer.send('ahoy:remote-error', err) 
+      // NOTE contextIsolation = false means we don't need to require electron
       // see https://www.electronjs.org/docs/tutorial/context-isolation
-
+      // in future when contextIsolation we can make safe api accessible here via preload option
+      // TODO mix 2021-04-30 : enable contextIsolation
 
       var localLog = console.log
       var localError = console.error
 
       console.log = function (...args) {
         localLog.apply(console, args)
-        // remoteLog(...args)
+        remoteLog(args)
       }
 
       console.error = function (...args) {
         localError.apply(console, args)
-        // remoteError(...args)
+        remoteError(args)
       }
 
       // Redirect errors to stderr
@@ -47,10 +38,9 @@
         else console.error(e) // e.g. some ResizeObserver errors have e.error = null !
       })
 
-      // WIP mix 20201-04-28 : re-enable process.exitA?
-      // NOTE electron.remote has been deprecated, see @electron/remote
       // process.exit = electron.remote.app.quit
-
+      // WIP mix 2021-04-28 : re-enable process.exit?
+      // NOTE electron.remote has been deprecated, not sure what this was previously doing
     </script>
   </body>
 </html>
