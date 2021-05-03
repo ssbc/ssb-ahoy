@@ -109,7 +109,6 @@ function script ({ config, plugins = [], appDir }) {
 
     var failures = 0
     function sendThumbsUp () {
-      electron.ipcRenderer.send('server-started', config.manifest)
       Client(config.keys, config, (err, client) => {
         if (err) {
           if (failures++ > 7) throw err
