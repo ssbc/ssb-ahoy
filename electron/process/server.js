@@ -2,23 +2,14 @@ const electron = require('electron')
 const path = require('path')
 const join = require('../../lib/join')
 
-const DEBUGGING = true // set to true to see backend console
+const DEBUGGING = process.env.NODE_ENV === 'development' || process.env.AHOY_SHOW_SERVER === 'true' // set to true to see backend console
 
 module.exports = function serverWindow ({ config, plugins, appDir }) {
   const opts = {
-    title: 'scuttlebutt server',
+    title: 'server',
     show: DEBUGGING,
     connect: false,
-    // center: true,
-    // fullscreen: false,
-    // fullscreenable: false,
-    // maximizable: false,
-    // minimizable: false,
-    // resizable: false,
     skipTaskbar: true,
-    // useContentSize: true,
-    // height: 150,
-    // width: 150,
     webPreferences: {
       nodeIntegration: true,
       contextIsolation: false

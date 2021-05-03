@@ -10,7 +10,6 @@ const Plugins = require('./lib/build-plugins')
 const join = require('./lib/join')
 const logger = require('./lib/log')
 const log = logger.bind(null, 'main')
-const logRemoteError = logger.bind(null, 'error')
 
 const Config = require('./lib/build-config')
 const ConfigLocal = require('./lib/build-config-local')
@@ -112,8 +111,14 @@ module.exports = function ahoy (opts) {
     ipcMain.on('ahoy:step', step)
     // TODO could check if an account is setup and offer different options
     // in the config screen accordingly?
-    ipcMain.on('ahoy:remote-log', (ev, args) => console.log(...args))
-    ipcMain.on('ahoy:remote-error', (ev, err) => logRemoteError(err))
+    ipcMain.on('ahoy:remote-log', (ev, args) => {
+      const { title } = ev.sender.browserWindowOptions
+      logger(title, ...args)
+    })
+    ipcMain.on('ahoy:remote-error', (ev, err) => {
+      const { title } = ev.sender.browserWindowOptions
+      logger(title + ' (error)', err)
+    })
 
     electron.app.on('activate', function (e) {
       // reopen the app when dock icon clicked on macOS

@@ -10,7 +10,7 @@ module.exports = function uiWindow ({ appPath, appURL }, opts = {}, config) {
   })
   opts = Object.assign(
     {
-      title: 'scuttlebutt ahoy!',
+      title: 'ui',
       show: true,
 
       x: windowState.x,
@@ -62,7 +62,7 @@ function Script (appPath, opts, config) {
     var electron = require('electron')
     var h = require('mutant/h')
     electron.webFrame.setVisualZoomLevelLimits(1, 1)
-    var title = ${JSON.stringify(opts.title || 'scuttlebutt ahoy!')}
+    var title = ${JSON.stringify(opts.title !== 'ui' ? opts.title : 'scuttlebutt ahoy!')}
     // TODO replace with raw createElement
     document.documentElement.querySelector('head').appendChild(
       h('title', title)
