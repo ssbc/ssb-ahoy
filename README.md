@@ -22,15 +22,13 @@ const ahoy = require('ssb-ahoy')
 const Config = require('ssb-config/inject')
 
 const plugins = [
+  'ssb-db', // < required
   'ssb-conn',
   'ssb-replicate',
   'ssb-friends',
   'ssb-invite',
-  'ssb-private',
   'ssb-backlinks',
-  'ssb-about',
   'ssb-query',
-  'ssb-suggest'
 ]
 
 ahoy({
