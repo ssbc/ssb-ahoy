@@ -2,7 +2,10 @@ const electron = require('electron')
 const path = require('path')
 const join = require('../../lib/join')
 
-const DEBUGGING = process.env.NODE_ENV === 'development' || process.env.AHOY_SHOW_SERVER === 'true' // set to true to see backend console
+const DEBUGGING = process.env.AHOY_SHOW_SERVER
+  ? process.env.AHOY_SHOW_SERVER === 'true'
+  : process.env.NODE_ENV === 'development'
+// if true shows the backend renderer, and opens the devtools in it
 
 module.exports = function serverWindow ({ config, plugins, appDir }) {
   const opts = {
