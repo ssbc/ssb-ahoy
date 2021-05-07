@@ -1,6 +1,6 @@
 const { contextBridge, ipcRenderer } = require('electron')
 
-contextBridge.exposeInMainWorld('api', {
+contextBridge.exposeInMainWorld('ahoy', {
   getConfig () {
     return ipcRenderer.invoke('get-config')
   }
