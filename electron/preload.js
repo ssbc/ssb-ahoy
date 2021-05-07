@@ -1,8 +1,12 @@
-const { contextBridge } = require('electron')
+const { contextBridge, ipcRenderer } = require('electron')
 
 contextBridge.exposeInMainWorld('api', {
-  hello: (thing) => console.log(thing)
+  getConfig () {
+    return ipcRenderer.invoke('get-config')
+  }
 })
 
 // then in window
-// window.api.hello('hi world')
+// window.ahoy.getConfig().then(config => {
+//
+// })

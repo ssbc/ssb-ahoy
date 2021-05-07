@@ -125,6 +125,8 @@ module.exports = function ahoy (opts) {
       if (state.windows.ui) state.windows.ui.show()
     })
 
+    ipcMain.handle('get-config', () => config)
+
     step() // Start up the next step
   })
 

@@ -24,13 +24,14 @@ module.exports = function uiWindow ({ appPath, appURL }, opts = {}, config) {
       // titleBarStyle: 'hidden',
       backgroundColor: '#fff',
       // icon: '../assets/icon.png', // may not be needed
-      webPreferences: { nodeIntegration: true }
+      webPreferences: {
+        nodeIntegration: false,
+        contextIsolation: true,
+        preload: path.join(__dirname, '../preload.js')
+      }
     },
     opts
   )
-  if (appURL) {
-    opts.webPreferences = { nodeIntegration: false }
-  }
 
   const win = new electron.BrowserWindow(opts)
   windowState.manage(win)
