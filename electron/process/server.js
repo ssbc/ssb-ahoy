@@ -78,7 +78,6 @@ function script ({ config, plugins = [], appDir }) {
       log('RECEIVED << server-close')
       server && server.close()
       electron.ipcRenderer.send('server-closed')
-        .catch(err => { console.trace(err) })
 
       // NOTE this should work but it doesn't reliably
       // server.close(() => {
@@ -119,7 +118,6 @@ function script ({ config, plugins = [], appDir }) {
         }
         client.close() // close this remote connection (not the actual server)
         electron.ipcRenderer.send('server-started', config.manifest)
-          .catch(err => { console.trace(err) })
       })
     }
   `
