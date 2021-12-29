@@ -2,9 +2,9 @@ const defaultMenu = require('electron-default-menu')
 const electron = require('electron')
 
 module.exports = function installMenu () {
-  var menu = defaultMenu(electron.app, electron.shell)
+  const menu = defaultMenu(electron.app, electron.shell)
 
-  var view = menu.find(x => x.label === 'View')
+  const view = menu.find(x => x.label === 'View')
   view.submenu = [
     { role: 'reload' },
     { role: 'toggledevtools' },
@@ -16,7 +16,7 @@ module.exports = function installMenu () {
     { role: 'togglefullscreen' }
   ]
 
-  var win = menu.find(x => x.label === 'Window')
+  const win = menu.find(x => x.label === 'Window')
   if (process.platform === 'darwin') {
     win.submenu = [
       { role: 'minimize' },
