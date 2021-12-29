@@ -1,13 +1,13 @@
 const electron = require('electron')
 const WindowState = require('electron-window-state')
 const path = require('path')
-const join = require('../../lib/join')
 
-module.exports = function uiWindow ({ appPath, appURL }, opts = {}, config) {
+module.exports = function uiWindow (ui, opts = {}) {
   const windowState = WindowState({
     defaultWidth: 1024,
     defaultHeight: 768
   })
+
   opts = Object.assign(
     {
       title: 'ui',
@@ -35,39 +35,18 @@ module.exports = function uiWindow ({ appPath, appURL }, opts = {}, config) {
 
   const win = new electron.BrowserWindow(opts)
   windowState.manage(win)
-  win.webContents.on('will-navigate', function (e, url) {
-    e.preventDefault()
+
+  win.webContents.on('will-navigate', (ev, url) => {
+    ev.preventDefault()
     electron.shell.openExternal(url)
   })
 
-  win.webContents.on('new-window', function (e, url) {
-    e.preventDefault()
+  win.webContents.on('new-window', (ev, url) => {
+    ev.preventDefault()
     electron.shell.openExternal(url)
   })
 
-  if (appURL) win.loadURL(appURL)
-  else {
-    appPath = join('../..', appPath)
-    win.webContents.on('dom-ready', function () {
-      win.webContents.executeJavaScript(Script(appPath, opts, config))
-    })
-
-    win.loadURL('file://' + path.join(__dirname, '../assets/base.html'))
-  }
+  win.loadURL(ui)
 
   return win
-}
-
-function Script (appPath, opts, config) {
-  return `
-    var electron = require('electron')
-    var h = require('mutant/h')
-    electron.webFrame.setVisualZoomLevelLimits(1, 1)
-    var title = ${JSON.stringify(opts.title !== 'ui' ? opts.title : 'scuttlebutt ahoy!')}
-    // TODO replace with raw createElement
-    document.documentElement.querySelector('head').appendChild(
-      h('title', title)
-    )
-    require('${appPath}')(${JSON.stringify(config)})
-  `
 }

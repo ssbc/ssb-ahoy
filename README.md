@@ -1,18 +1,11 @@
 # ssb-ahoy !
 
-An onboarding mini-app - gets you all set up, and caught up on the gossip before you set out on your adventure
-
-You currently need to be on the same network as another peer (this version has to start with local peer recplication)
+Simple app for getting an electron-based scuttlebutt app up and running!
 
 ## Requirements
 
 You must have the following modules installed in your application:
 - `secret-stack` (`^6.2.1`)
-- `ssb-db`
-- `ssb-master`
-- `ssb-unix-socket` + `ssb-no-auth`
-
-:warning: **NOTE** we no longer use `ssb-server` (this is just `secret-stack` + `ssb-db` + some CLI tools)
 
 ## Example usage
 
@@ -33,8 +26,17 @@ const plugins = [
 
 ahoy({
   title: 'Patchbay',
-  plugins,
-  appPath: './app.js', // entry point to your main app
+  secretStack: require('secret-stack'),
+  plugins: [
+    require('ssb-db'), // < required
+    require('ssb-conn'),
+    require('ssb-replicate'),
+    require('ssb-friends'),
+    require('ssb-invite'),
+    require('ssb-backlinks'),
+    require('ssb-query'),
+  ],
+  ui: require('./dist/ui.bundle.js'),
   onReady: (state) => {
     console.log('welcome aboard')
     console.log(state)
