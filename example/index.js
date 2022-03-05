@@ -1,5 +1,5 @@
 const { join } = require('path')
-const ahoy = require('../')
+const ahoy = require('ssb-ahoy')
 
 ahoy(
   {

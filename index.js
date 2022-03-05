@@ -27,7 +27,6 @@ module.exports = function ahoy (opts, cb) {
   if (!ui) throw Error('ssb-ahoy: expects a ui')
 
   const state = {
-    server: null,
     ui: null,
     quitting: false
   }
@@ -56,25 +55,31 @@ module.exports = function ahoy (opts, cb) {
       if (state.ui) state.ui.show() // reopen the app when dock icon clicked on macOS
     })
 
-    StartServer(StartUI)
+    StartServer(config, StartUI)
   })
 
-  function StartServer (cb) {
+  function StartServer (config, cb) {
     if (state.server) throw Error('ahoy: you can only have one server at a time!')
     if (!config && !plugins) return cb() // because a UI-only based step
 
     log('starting Server')
-    const shs = config.caps.shs
-    const stack = secretStack({ caps: { shs } })
+    const stack = secretStack({ caps: { shs: config.caps.shs } })
     plugins.forEach(plugin => stack.use(plugin))
-    state.server = stack(config)
 
-    const manifest = state.server.getManifest()
-    config.manifest = manifest
+    const server = stack(config)
+
+    const manifest = server.getManifest()
     // TODO write a copy to join(config.path, 'manifest.json')
+    config.manifest = manifest
 
     // TODO ping the server to check it's all ready to go before launching UI
-    cb()
+
+    const isReady = server.isReady || server.whoami
+
+    isReady((err, data) => {
+      if (err) throw new Error(err)
+      cb()
+    })
   }
 
   function StartUI () {

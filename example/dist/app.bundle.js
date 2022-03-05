@@ -1,23 +1,25 @@
 // NOTE this is dummy code to minimally test the app.
-// It's expected this file will be generated through bundling (WebPack etc.)
+// It's expected this file will be generated through bundling
 
 const app = document.getElementById('app')
 
-const title = document.createElement('h1')
-title.innerText = 'Example Ahoy!'
-app.appendChild(title)
+async function start () {
+  const title = h('h1', 'Example Ahoy!')
+  const message = h('div', 'loading...')
 
-const message = document.createElement('div')
-message.innerText = 'loading...'
-app.appendChild(message)
+  app.appendChild(title)
+  app.appendChild(message)
 
-// NOTE - if the UI is using ssb-config, how do we know what config to run
-// - [x] fine if we bake in the config
-// - [ ] not great if we want to change the location
-//     - could use electron-rpc methods to ask electron how/ where to connect
-//     - could use electron window to make some functions/ variables available on the window!
+  // We use electron window functions to expose safe IPC call getConfig()
+  const config = await window.ahoy.getConfig()
+  console.log('ssb config:', config)
+  message.innerHTML = `Your scuttlebutt id: <code>${config.keys.id}</code>`
+}
+start()
 
-window.ahoy.getConfig()
-  .then(config => {
-    message.innerText = `Your scuttlebutt id: ${config.keys.id}`
-  })
+function h (type, text) {
+  const newEl = document.createElement(type)
+  newEl.innerText = text
+
+  return newEl
+}

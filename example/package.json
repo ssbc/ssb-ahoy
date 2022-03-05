@@ -4,14 +4,19 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "postinstall": "electron-builder install-app-deps",
     "start": "electron index.js"
   },
   "author": "",
   "license": "AGPL-3.0",
-  "devDependencies": {
-    "electron": "^16.0.5",
+  "dependencies": {
+    "electron": "^17.1.0",
     "secret-stack": "^6.4.0",
+    "ssb-ahoy": "file:..",
     "ssb-config": "^3.4.6",
     "ssb-db": "^20.4.1"
+  },
+  "devDependencies": {
+    "electron-builder": "^22.14.13"
   }
 }
