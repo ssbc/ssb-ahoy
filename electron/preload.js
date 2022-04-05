@@ -6,12 +6,11 @@ contextBridge.exposeInMainWorld('ahoy', {
   }
 })
 
-// # Usage
-//
 // in ui window this exposes a safe API that can be called like
 //
 // ```js
-// window.ahoy.getConfig().then(config => {
+// window.ahoy.getConfig()
+//   .then(config => {
 //
-// })
+//   })
 // ```

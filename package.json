@@ -17,11 +17,17 @@
   "author": "mixmix",
   "license": "AGPL-3.0",
   "dependencies": {
-    "electron": "^17.1.0",
+    "deep-extend": "^0.6.0",
+    "electron": "^18.0.1",
     "electron-default-menu": "^1.0.1",
     "electron-window-state": "^5.0.3",
-    "lodash.merge": "^4.6.2",
-    "lodash.pickby": "^4.6.0",
-    "ssb-config": "^3.2.5"
+    "env-paths": "^2.2.1",
+    "secret-stack": "^6.4.1",
+    "ssb-caps": "^1.1.0",
+    "ssb-config": "^3.2.5",
+    "ssb-keys": "^8.2.0"
+  },
+  "devDependencies": {
+    "standard": "^16.0.4"
   }
 }

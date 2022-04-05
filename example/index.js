@@ -2,19 +2,21 @@ const { join } = require('path')
 const ahoy = require('ssb-ahoy')
 
 ahoy(
+  `file://${join(__dirname, 'dist', 'index.html')}`,
   {
     title: 'example-ahoy',
-    secretStack: require('secret-stack'),
     plugins: [
       require('ssb-db')
     ],
-    ui: `file://${join(__dirname, 'dist', 'index.html')}`
+    config: {
+      // path: join(__dirname, 'dev-data')
+    }
+
+
   },
-  (err, instance) => {
+  (err, ssb) => {
     if (err) throw err
 
-    console.log(instance)
-
-    setTimeout(instance.close, 1000)
+    console.log('ahoy started', ssb.id)
   }
 )

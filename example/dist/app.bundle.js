@@ -1,5 +1,5 @@
 // NOTE this is dummy code to minimally test the app.
-// It's expected this file will be generated through bundling
+// This file will generally be made through "bundling"
 
 const app = document.getElementById('app')
 
@@ -13,7 +13,16 @@ async function start () {
   // We use electron window functions to expose safe IPC call getConfig()
   const config = await window.ahoy.getConfig()
   console.log('ssb config:', config)
-  message.innerHTML = `Your scuttlebutt id: <code>${config.keys.id}</code>`
+  message.innerHTML = `
+    <p>
+      Current app path:
+      <pre><code>  ${config.path}</code></pre>
+    </p>
+    <p>
+      My feedId:
+      <pre><code>  ${config.keys.id}</code></pre>
+    </p>
+  `
 }
 start()
 

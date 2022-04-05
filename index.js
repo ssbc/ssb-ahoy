@@ -1,101 +1,106 @@
 const electron = require('electron')
-const { ipcMain } = electron
+const secretStack = require('secret-stack')
+const caps = require('ssb-caps')
 const { promisify } = require('util')
 
 const Menu = require('./electron/menu')
-const UI = require('./electron/process/ui')
+const UIWindow = require('./electron/window/ui-window')
 const logger = require('./lib/log')
 const log = logger.bind(null, 'main')
 
 const Config = require('./lib/build-config')
 
-module.exports = function ahoy (opts, cb) {
-  if (cb === undefined) return promisify(ahoy)(opts)
-  // TODO - do something to return an API like { electron, ssb, config, manifest }
+module.exports = function ahoy (url, opts, cb) {
+  if (cb === undefined) return promisify(ahoy)(url, opts)
 
   const {
-    title,
-    secretStack,
+    title = 'hello_world',
     plugins = [],
-    config = Config('ssb'),
-    // TODO check config
-    // TODO if auto setting config, then check the plugins to see if socket is present!
-    ui // TODO check is URL or file://
+    config: _config
   } = opts
 
+  const config = Config(title, _config, plugins)
+
   if (!Array.isArray(plugins)) throw Error('ssb-ahoy: plugins must be an array')
-  if (!ui) throw Error('ssb-ahoy: expects a ui')
+  if (!isValidUrl(url)) throw Error('ssb-ahoy: expects a ui URL which starts with http: | https: | file:')
 
   const state = {
-    ui: null,
     quitting: false
   }
 
-  ipcMain.handle('get-config', () => config)
-  electron.app.on('before-quit', function (e) {
+  electron.app.on('before-quit', () => {
     state.quitting = true
     log('quitting')
   })
 
   electron.app.on('ready', () => {
-    // TODO check this is used. I think this needs to be called in the UI windows?
+    // reply to ui-window calls for ssb config
+    electron.ipcMain.handle('get-config', () => config)
+
     Menu()
 
-    // ipcMain.on('ahoy:remote-log', (ev, args) => {
-    //   const { title } = ev.sender.browserWindowOptions
-    //   logger(title, ...args)
-    // })
-    // ipcMain.on('ahoy:remote-error', (ev, err) => {
-    //   const { title } = ev.sender.browserWindowOptions
-    //   logger(title + ' (error)', err)
-    // })
+    startSSB(plugins, config, (err, ssb) => {
+      if (err) throw err // TODO launch error UI
 
-    // TODO can we move this outside this onReady?
-    electron.app.on('activate', ev => {
-      if (state.ui) state.ui.show() // reopen the app when dock icon clicked on macOS
+      config.manifest = ssb.getManifest()
+      // TODO write to path/manifest.json
+
+      launchUI(url, title, state, (err) => {
+        if (err) throw err // TODO launch error UI
+        cb(null, ssb)
+      })
     })
+  })
+}
 
-    StartServer(config, StartUI)
+function startSSB (plugins, config, cb) {
+  log('starting Server')
+
+  const stack = secretStack({ caps: config.caps || caps })
+  plugins.forEach(plugin => stack.use(plugin))
+
+  const ssb = stack(config)
+
+  const isReady = ssb.whoami
+  // TODO 2022-04-05 - replace with a fn which is a better test of "ready"
+  isReady((err, data) => {
+    if (err) throw new Error(err)
+    cb(null, ssb)
+  })
+}
+
+function launchUI (url, title, state, cb) {
+  log('starting UI')
+
+  const uiWindow = UIWindow(url, { title })
+  uiWindow.setSheetOffset(40)
+
+  /* handle OSX minimizing */
+  uiWindow.on('close', ev => {
+    if (process.platform === 'darwin') {
+      if (!state.quitting) {
+        ev.preventDefault()
+        uiWindow.hide()
+      }
+    } else {
+      electron.app.quit()
+    }
   })
 
-  function StartServer (config, cb) {
-    if (state.server) throw Error('ahoy: you can only have one server at a time!')
-    if (!config && !plugins) return cb() // because a UI-only based step
+  // OSX - reopen app when dock icon is clicked
+  electron.app.on('activate', ev => uiWindow.show())
 
-    log('starting Server')
-    const stack = secretStack({ caps: { shs: config.caps.shs } })
-    plugins.forEach(plugin => stack.use(plugin))
+  cb(null)
+}
 
-    const server = stack(config)
+function isValidUrl (str) {
+  if (typeof str !== 'string') return false
 
-    const manifest = server.getManifest()
-    // TODO write a copy to join(config.path, 'manifest.json')
-    config.manifest = manifest
+  const validStarts = [
+    'file://',
+    'http://',
+    'https://'
+  ]
 
-    // TODO ping the server to check it's all ready to go before launching UI
-
-    const isReady = server.isReady || server.whoami
-
-    isReady((err, data) => {
-      if (err) throw new Error(err)
-      cb()
-    })
-  }
-
-  function StartUI () {
-    log('starting UI')
-
-    state.ui = UI(ui, { title })
-    state.ui.setSheetOffset(40)
-    state.ui.on('close', ev => {
-      if (process.platform === 'darwin') {
-        if (!state.quitting) {
-          ev.preventDefault()
-          state.ui.hide()
-        }
-      } else {
-        electron.app.quit()
-      }
-    })
-  }
+  return validStarts.some(start => str.startsWith(start))
 }

@@ -2,46 +2,28 @@
 
 Simple app for getting an electron-based scuttlebutt app up and running!
 
-## Requirements
+Builds over:
+- `electron@18`
+- `secret-stack@6`
 
-You must have the following modules installed in your application:
-- `secret-stack` (`^6.2.1`)
-
-## Example usage
+## Getting started 
 
 ```js
 // index.js
 const ahoy = require('ssb-ahoy')
 const Config = require('ssb-config/inject')
 
-const plugins = [
-  'ssb-db', // < required
-  'ssb-conn',
-  'ssb-replicate',
-  'ssb-friends',
-  'ssb-invite',
-  'ssb-backlinks',
-  'ssb-query',
-]
-
-ahoy({
-  title: 'Patchbay',
-  secretStack: require('secret-stack'),
+ahoy(
   plugins: [
-    require('ssb-db'), // < required
-    require('ssb-conn'),
-    require('ssb-replicate'),
-    require('ssb-friends'),
-    require('ssb-invite'),
-    require('ssb-backlinks'),
-    require('ssb-query'),
+    require('ssb-db'),
+    require('ssb-backlinks')
   ],
-  ui: require('./dist/ui.bundle.js'),
-  onReady: (state) => {
-    console.log('welcome aboard')
-    console.log(state)
+  (err, ssb) => {
+    if (err) throw err
+
+    console.log('ahoy started', ssb.id)
   }
-})
+)
 ```
 
 ```json
@@ -53,61 +35,37 @@ ahoy({
 }
 ```
 
-**NOTE**: if you set `AHOY=true` then `ssb-ahoy` will open up regardless of whether you're "set up"
-
 ## API
 
-### `ahoy(opts)`
+### `ahoy(url, opts, cb)`
 
-`opts` *Object* with properties:
-- `plugins` - *[String]* an array of `ssb-server` plugins names (as strings) you'd like ahoy to run for you
-- `appURL` | `appPath` - *String* (only one of these)
-  - `appURL` - points to a URL for your app. This is really useful for things like webpack dev-servers (e.g. can be `http://localhost:8080` or `\`file://${__dirname}/index.html\``)
-  - `appPath` - the relative path to the entry points of your app, from the root of your app repo. The entry point is expected to export function that accepts a copy of the `config` (so it can connect to the server that's been started!) and is expected to handle attaching some UI to the page.
-- `title` - *String* (optional) the title to be attached to the visible window
-- `config` - *Object* (optional) if this is supplied, `ssb-ahoy`'s config selector + editor will be skipped and you'll be jumped straight to launching your app. Must be valid config for starting and connecting to an `ssb-server` and include `config.keys` (see also: [ssb-config](www.github.com/ssbc/ssb-config))
-- `appDir` - *String* (optional) the relative path to your app root _**from** the ssb-ahoy module_. Generally just don't touch this, it's only really used when symlinking `ssb-ahoy` in ... you don't want to know :(
-- `onReady`- *Function* (optional) a callback which is run after ahoy hands over to your main app. Is passed some state data, e.g. `config`, `windows` (ui, server)
-
-## The voyage map
-
-Note at the moment moment `ssb-ahoy` is running the main electron instance.
-We can't seem to easily quit out of it and launch pour own e.g. patchbay, using that electron... which would seem more ideal.
-Currently just hacking it so that `app.quit()` is not called, and patchbay uses ahoy's electron ...
-
-- [x] start with alternative configs
-  - [x] find or create new identities
-  - [x] see and edit `config` for an identity
-  - [x] block users from changing `caps.sign` if it's already set
-
-- [ ] option to skip skip ssb-ahoy
-  - [ ] based on some setting/ config somewhere
-  - [ ] based on account state (name, image, follows, seq)
-
-- [ ] set your name / image (if applicable)
-
-- [ ] first time replication + indexing (currently disabled)
-  - [x] lets you follow peers on a local network
-  - [x] shows you progress of replication and indexing
-  - [x] let's your quit out and try jumping to the next app!
-  - [x] get it working on Unix / Windows
-    - [x] starts
-  - [ ] builds working installers
-  - [ ] _ANY_ UI design + css !
-  - bonuses: 
-    - [ ] names next to the local peers keys
-      - note that `lib/get-name` only looks for more recent self-set name. any more requires indexes
-    - [ ] only provide (next) button if know (based on `ssb-ebt` data) have all the data for all the feeds
-    - [x] split the replication into multiple stages
-
-Bonus:
+- `url` *String*
+    - a url to load the app UI from
+    - can start with `http:`, `https:`, or `file:` (for fetching a file directly from the file system)
+- `opts` *Object* with properties:
+    - `opts.title` - *String* the title of your app
+        - will be the title of the app window
+        - default: `'hello_world'`
+    - `opts.plugins` - *[Plugin]* an array of `secret-stack` plugins
+        - default: `[]`
+    - `opts.config` - *Object* config over-wrides which `secret-stack` and `plugins` will be launched with
+        - `opts.config.path` - *String* location your database + secret will be installed
+            - default: `\${envPaths.data}/ssb-ahoy/dev/\${format(opts.title)}` 
+        - generally defaults follow `ssb-config/defaults.js`
+- `cb` *function* callback which is run once ssb and electron have started up
 
 
-## Development
+### `ahoy(url, opts) => Promise`
 
-:warning: **WARNING** - because of limitations in electron, I've had to use `executeJavaScript` which only takes strings.
-In terms of requiring plugins, this has meant some kinda nasty hacks so that ssb-ahoy doesn't have to maintain plugins.
+Convenience method which is a `promisify`'d version of the last method.
 
-You are likely to have problems if you try to symlink this module into place.
-The solution is to set the `opts.appDir`. e.g. if I have `~/projects/patchbay` and `~/projects/ssb-ahoy`, then after linking ssb-ahoy into patchbay, I would set `appDir: '../patchbay'`
+
+## TODO
+
+- [ ] example
+    - [ ] add `electron-builder`
+    - [ ] see if can remove `electron` as a dependancy of projects using ahoy
+
+- [ ] make noderify'able
+
 
