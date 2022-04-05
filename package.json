@@ -8,8 +8,7 @@
   },
   "main": "index.js",
   "scripts": {
-    "postinstall": "electron-builder install-app-deps",
-    "test": "standard --fix"
+    "postinstall": "electron-builder install-app-deps"
   },
   "keywords": [
     "scuttlebutt",
@@ -20,7 +19,6 @@
   "dependencies": {
     "deep-extend": "^0.6.0",
     "electron": "18.0.1",
-    "electron-builder": "^22.14.13",
     "electron-default-menu": "^1.0.1",
     "electron-window-state": "^5.0.3",
     "env-paths": "^2.2.1",
@@ -29,7 +27,10 @@
     "ssb-config": "^3.2.5",
     "ssb-keys": "^8.2.0"
   },
+  "devDependancies": {
+    "electron-builder": "^22.14.13"
+  },
   "devDependencies": {
-    "standard": "^16.0.4"
+    "electron-builder": "^22.14.13"
   }
 }

@@ -73,6 +73,23 @@ Convenience method which is a `promisify`'d version of the last method.
 see `example/` folder for a simple example application.
 
 
+## Building installers
+
+Your project:
+- MUST have a package.json script `"start": "electron index.js"`
+- MUST provide an `electron-builder` config
+    - MUST alert builder of any native deps needed to be included
+    - highly recommend using a `.js` file so you can leave comments as it gets more complex!
+    - call this with a script like `"release": "electron-builder --config builder.config.js"`
+- MUST rebuild native dependancies to be compatible with electron abi's
+    - EITHER run `npm run install` (which triggers a postinstall scipt)
+    - OR add a package.json script for calling `electron-builder install-app-deps`
+
+Resouces:
+- `electron-builder` docs: www.electron.build
+- Notes on Apple's painful signing process
+    - https://kilianvalkhof.com/2019/electron/notarizing-your-electron-application/
+
 ---
 
 ## Development
