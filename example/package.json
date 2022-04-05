@@ -4,7 +4,6 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "postinstall": "electron-builder install-app-deps",
     "start": "electron index.js"
   },
   "author": "",
@@ -16,7 +15,6 @@
     "ssb-db": "^20.4.1"
   },
   "devDependencies": {
-    "electron-builder": "^22.14.13",
     "standard": "^16.0.4"
   }
 }
