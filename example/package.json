@@ -9,8 +9,7 @@
   "author": "",
   "license": "AGPL-3.0",
   "dependencies": {
-    "electron": "^18.0.1",
-    "ssb-ahoy": "file:..",
+    "ssb-ahoy": "github:ssbc/ssb-ahoy#main_server",
     "ssb-config": "^3.4.6",
     "ssb-db": "^20.4.1"
   },

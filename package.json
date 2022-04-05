@@ -19,7 +19,7 @@
   "license": "AGPL-3.0",
   "dependencies": {
     "deep-extend": "^0.6.0",
-    "electron": "^18.0.1",
+    "electron": "18.0.1",
     "electron-builder": "^22.14.13",
     "electron-default-menu": "^1.0.1",
     "electron-window-state": "^5.0.3",

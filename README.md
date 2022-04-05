@@ -73,6 +73,16 @@ Convenience method which is a `promisify`'d version of the last method.
 see `example/` folder for a simple example application.
 
 
+---
+
+## Development
+
+## Notes
+
+- we pin `electron` to an exact version here for 2 reasons:
+    - ensure it's tested + stable in this module
+    - help `electron-builder` to know _exactly_ what it's building against
+
 ## TODO
 
 - [ ] example
