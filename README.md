@@ -11,13 +11,16 @@ Builds on top of:
 ```js
 // index.js
 const ahoy = require('ssb-ahoy')
-const Config = require('ssb-config/inject')
+const path = require('path')
 
 ahoy(
-  plugins: [
-    require('ssb-db'),
-    require('ssb-backlinks')
-  ],
+  'http://localhost:8080', // dev-server for UI
+  {
+    plugins: [
+      require('ssb-db'),
+      require('ssb-backlinks')
+    ]
+  },
   (err, ssb) => {
     if (err) throw err
 
@@ -43,7 +46,9 @@ ahoy(
     - a url to load the app UI from
     - can start with
         - `http:`, `https:` - great for local dev-servers
-        - `file:` - very useful for bundled production app (it fetches an index.html file directly from the file system)
+        - `file:` - useful when you bundle ui for production, electron fetches directly from file system
+            - e.g. `file://${path.join(__dirname, 'dist/index.html)}'
+
 - `opts` *Object* with properties:
     - `opts.title` - *String* the title of your app
         - will be the title of the app window
@@ -54,6 +59,7 @@ ahoy(
         - `opts.config.path` - *String* location your database + secret will be installed
             - default: `\${envPaths.data}/ssb-ahoy/dev/\${format(opts.title)}` 
         - generally defaults follow `ssb-config/defaults.js`
+
 - `cb` *function* callback which is run once ssb and electron have started up
 
 
