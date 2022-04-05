@@ -1,8 +1,8 @@
 # ssb-ahoy !
 
-Simple app for getting an electron-based scuttlebutt app up and running!
+A simple module for getting electron-based scuttlebutt apps up and running.
 
-Builds over:
+Builds on top of:
 - `electron@18`
 - `secret-stack@6`
 
@@ -41,7 +41,9 @@ ahoy(
 
 - `url` *String*
     - a url to load the app UI from
-    - can start with `http:`, `https:`, or `file:` (for fetching a file directly from the file system)
+    - can start with
+        - `http:`, `https:` - great for local dev-servers
+        - `file:` - very useful for bundled production app (it fetches an index.html file directly from the file system)
 - `opts` *Object* with properties:
     - `opts.title` - *String* the title of your app
         - will be the title of the app window
@@ -58,6 +60,11 @@ ahoy(
 ### `ahoy(url, opts) => Promise`
 
 Convenience method which is a `promisify`'d version of the last method.
+
+
+## Example
+
+see `example/` folder for a simple example application.
 
 
 ## TODO

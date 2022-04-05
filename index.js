@@ -19,7 +19,7 @@ module.exports = function ahoy (url, opts, cb) {
     config: _config
   } = opts
 
-  const config = Config(title, _config, plugins)
+  const config = Config(title, plugins, _config)
 
   if (!Array.isArray(plugins)) throw Error('ssb-ahoy: plugins must be an array')
   if (!isValidUrl(url)) throw Error('ssb-ahoy: expects a ui URL which starts with http: | https: | file:')
@@ -97,9 +97,9 @@ function isValidUrl (str) {
   if (typeof str !== 'string') return false
 
   const validStarts = [
-    'file://',
-    'http://',
-    'https://'
+    'file:',
+    'http:',
+    'https:'
   ]
 
   return validStarts.some(start => str.startsWith(start))
