@@ -42,21 +42,21 @@ ahoy(
 
 ### `ahoy(url, opts, cb)`
 
-- `url` *String*
-    - a url to load the app UI from
-    - can start with
-        - `http:`, `https:` - great for local dev-servers
-        - `file:` - useful when you bundle ui for production, electron fetches directly from file system
-            - e.g. `file://${path.join(__dirname, 'dist/index.html)}'
+- `url` *String* - a url to load the app UI from
+  - can start with
+      - `http:`, `https:` - great for local dev-servers
+      - `file:` - useful when you bundle ui for production, electron fetches directly from file system
+          - e.g. `file://${path.join(__dirname, 'dist/index.html)}'
+  - required
 
 - `opts` *Object* with properties:
-    - `opts.title` - *String* the title of your app
+    - `opts.title` *String* - the title of your app
         - will be the title of the app window
         - default: `'hello_world'`
-    - `opts.plugins` - *[Plugin]* an array of `secret-stack` plugins
+    - `opts.plugins` *[Plugin]* - an array of `secret-stack` plugins
         - default: `[]`
-    - `opts.config` - *Object* config over-wrides which `secret-stack` and `plugins` will be launched with
-        - `opts.config.path` - *String* location your database + secret will be installed
+    - `opts.config` *Object* - over-rides what's passed to `secret-stack` + `plugins` on launch
+        - `opts.config.path` *String* - location your database + secret will be installed
             - default: `\${envPaths.data}/ssb-ahoy/dev/\${format(opts.title)}` 
         - generally defaults follow `ssb-config/defaults.js`
 
