@@ -1,16 +1,18 @@
 {
   "name": "example-ahoy",
-  "version": "1.0.0",
+  "version": "0.1.0",
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "electron index.js"
+    "start": "electron index.js",
+    "release": "electron-builder --config builder/config.js",
+    "build:deps": "electron-builder install-app-deps"
   },
   "author": "",
   "license": "AGPL-3.0",
   "dependencies": {
     "ssb-ahoy": "github:ssbc/ssb-ahoy#main_server",
-    "ssb-config": "^3.4.6",
+    "ssb-backlinks": "^2.1.1",
     "ssb-db": "^20.4.1"
   },
   "devDependencies": {

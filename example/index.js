@@ -6,13 +6,12 @@ ahoy(
   {
     title: 'example-ahoy',
     plugins: [
-      require('ssb-db')
+      require('ssb-db'),
+      require('ssb-backlinks')
     ],
     config: {
       // path: join(__dirname, 'dev-data')
     }
-
-
   },
   (err, ssb) => {
     if (err) throw err
