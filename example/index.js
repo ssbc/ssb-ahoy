@@ -22,6 +22,7 @@ ahoy(
       (err, msg) => {
         if (err) throw err
         console.log(JSON.stringify(msg, null, 2))
+        console.log('index.js')
       }
     )
   }

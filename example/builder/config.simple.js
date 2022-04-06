@@ -5,7 +5,6 @@ module.exports = {
   directories: {
     output: 'dist/installers'
   },
-  electronVersion: '18.0.1',
 
   /* Linux */
   linux: {
