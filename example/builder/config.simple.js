@@ -2,10 +2,10 @@
 
 module.exports = {
   appId: 'com.example-ahoy.app',
-
   directories: {
     output: 'dist/installers'
   },
+  electronVersion: '18.0.1',
 
   /* Linux */
   linux: {
