@@ -1,4 +1,4 @@
-const electron = require('electron')
+const { app, ipcMain } = require('electron')
 const secretStack = require('secret-stack')
 const caps = require('ssb-caps')
 const { promisify } = require('util')
@@ -28,14 +28,14 @@ module.exports = function ahoy (url, opts, cb) {
     quitting: false
   }
 
-  electron.app.on('before-quit', () => {
+  app.on('before-quit', () => {
     state.quitting = true
     log('quitting')
   })
 
-  electron.app.on('ready', () => {
+  app.on('ready', () => {
     // reply to ui-window calls for ssb config
-    electron.ipcMain.handle('get-config', () => config)
+    ipcMain.handle('get-config', () => config)
 
     Menu()
 
@@ -83,12 +83,12 @@ function launchUI (url, title, state, cb) {
         uiWindow.hide()
       }
     } else {
-      electron.app.quit()
+      app.quit()
     }
   })
 
   // OSX - reopen app when dock icon is clicked
-  electron.app.on('activate', ev => uiWindow.show())
+  app.on('activate', ev => uiWindow.show())
 
   cb(null)
 }
