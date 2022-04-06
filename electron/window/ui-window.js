@@ -1,4 +1,4 @@
-const electron = require('electron')
+const { BrowserWindow, shell } = require('electron')
 const WindowState = require('electron-window-state')
 const path = require('path')
 
@@ -10,7 +10,7 @@ module.exports = function uiWindow (url, opts = {}) {
     defaultHeight: 768
   })
 
-  const win = new electron.BrowserWindow({
+  const win = new BrowserWindow({
     title: 'ui',
     show: true,
 
@@ -39,12 +39,12 @@ module.exports = function uiWindow (url, opts = {}) {
 
   win.webContents.on('will-navigate', (ev, url) => {
     ev.preventDefault()
-    electron.shell.openExternal(url)
+    shell.openExternal(url)
   })
 
   win.webContents.on('new-window', (ev, url) => {
     ev.preventDefault()
-    electron.shell.openExternal(url)
+    shell.openExternal(url)
   })
 
   win.loadURL(url)

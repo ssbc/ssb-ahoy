@@ -1,8 +1,8 @@
 const defaultMenu = require('electron-default-menu')
-const electron = require('electron')
+const { app, shell, Menu } = require('electron')
 
 module.exports = function installMenu () {
-  const menu = defaultMenu(electron.app, electron.shell)
+  const menu = defaultMenu(app, shell)
 
   const view = menu.find(x => x.label === 'View')
   view.submenu = [
@@ -33,5 +33,5 @@ module.exports = function installMenu () {
     ]
   }
 
-  electron.Menu.setApplicationMenu(electron.Menu.buildFromTemplate(menu))
+  Menu.setApplicationMenu(Menu.buildFromTemplate(menu))
 }
