@@ -5,8 +5,9 @@
   "main": "index.js",
   "scripts": {
     "start": "electron index.js",
+    "build:deps": "electron-builder install-app-deps",
     "release": "electron-builder --config builder/config.js",
-    "build:deps": "electron-builder install-app-deps"
+    "lint": "standard --fix"
   },
   "author": "",
   "license": "AGPL-3.0",

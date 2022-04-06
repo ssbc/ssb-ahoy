@@ -17,5 +17,12 @@ ahoy(
     if (err) throw err
 
     console.log('ahoy started', ssb.id)
+    ssb.publish(
+      { type: 'success', time: new Date().toString() },
+      (err, msg) => {
+        if (err) throw err
+        console.log(JSON.stringify(msg, null, 2))
+      }
+    )
   }
 )

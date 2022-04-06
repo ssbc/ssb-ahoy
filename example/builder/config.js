@@ -1,44 +1,47 @@
 // see https://www.electron.build/configuration/configuration
 
+// NOTE
+// - this is a more optimized config which prunes un-needed files
+// - see config.simple.js for something easier, but makes things a few MB bigger
+
+const simple = require('./config.simple.js')
+
 module.exports = {
-  appId: 'com.example-ahoy.app',
+  ...simple,
 
-  directories: {
-    output: 'dist/installers'
-  },
+  files: fileRules([
+    // sodium-native - drop un-needed prebuilds
+    '!node_modules/sodium-native/{prebuilds/*, deps, test, binding.*, *.md}',
+    'node_modules/sodium-native/prebuilds/${platform}-${arch}/*', // eslint-disable-line
 
-  // asarUnpack: [
-  //   './node_modules/sodium-native/**'
-  //   // needed for sodium-native/prebuilds trim, not sure why
-  // ],
-  // files: [
-  //   // sodium-native: only include needed prebuilds
-  //   'node_modules/sodium-native/prebuilds/${platform}-${arch}/*', // eslint-disable-line
-  // ],
+    // leveldown - drop un-needed prebuilds
+    '!node_modules/leveldown/{prebuilds/*, deps, binding.*, *.md}',
+    'node_modules/leveldown/prebuilds/${platform}-${arch}/*', // eslint-disable-line
 
-  /* Linux */
-  linux: {
-    category: 'Network',
-    target: 'AppImage'
-  },
-  appImage: {
-    artifactName: '${name}-Linux-${version}-${arch}.${ext}' // eslint-disable-line
-  },
+    // es-abstract
+    '!node_modules/es-abstract/',
+    'node_modules/es-abstract/helpers/getOwnPropertyDescriptor.js'
+    // WARNING - you may have to include more files, check your installer launches!
+  ])
+}
 
-  /* Mac */
-  mac: {
-    category: 'public.app-category.social-networking'
-  },
-  dmg: {
-    artifactName: '${name}-Mac-${version}.${ext}', // eslint-disable-line
-  },
+function fileRules (rules) {
+  // defaults from electron-builder
+  //   https://www.electron.build/configuration/contents#files
+  const defaults = [
+    '**/*',
+    '!**/node_modules/*/{CHANGELOG.md,README.md,README,readme.md,readme}',
+    '!**/node_modules/*/{test,__tests__,tests,powered-test,example,examples}',
+    '!**/node_modules/*.d.ts',
+    '!**/node_modules/.bin',
+    '!**/*.{iml,o,hprof,orig,pyc,pyo,rbc,swp,csproj,sln,xproj}',
+    '!.editorconfig',
+    '!**/._*',
+    '!**/{.DS_Store,.git,.hg,.svn,CVS,RCS,SCCS,.gitignore,.gitattributes}',
+    '!**/{__pycache__,thumbs.db,.flowconfig,.idea,.vs,.nyc_output}',
+    '!**/{appveyor.yml,.travis.yml,circle.yml}',
+    '!**/{npm-debug.log,yarn.lock,.yarn-integrity,.yarn-metadata.json}'
+  ]
 
-  /* Windows */
-  win: {
-  },
-  nsis: {
-    artifactName: '${name}-Windows-${version}.${ext}', // eslint-disable-line
-    include: 'build/win/add-missing-dll.nsh' // fixes missing VCRUNTIME140.dll
-    // source: https://github.com/sodium-friends/sodium-native/issues/100
-  }
+  return [...defaults, ...rules]
 }
