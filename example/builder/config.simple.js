@@ -3,7 +3,7 @@
 module.exports = {
   appId: 'com.example-ahoy.app',
   directories: {
-    output: 'dist/installers'
+    output: 'installers'
   },
 
   /* Linux */

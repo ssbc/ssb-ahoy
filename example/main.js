@@ -2,7 +2,7 @@ const { join } = require('path')
 const ahoy = require('ssb-ahoy')
 
 ahoy(
-  `file://${join(__dirname, 'dist', 'index.html')}`,
+  `file://${join(__dirname, 'ui', 'index.html')}`,
   {
     title: 'example-ahoy',
     plugins: [

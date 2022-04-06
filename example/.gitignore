@@ -1,3 +1,4 @@
 node_modules
 package-lock.json
-dist/installers
+installers
+main.bundle.js
