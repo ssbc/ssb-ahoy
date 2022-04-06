@@ -29,7 +29,7 @@
     "electron": "18.0.1",
     "electron-builder": "^22.14.13"
   },
-  "peerDependenciesMeta": {
-    "electron-builder": { "optional": true }
+  "engines": {
+    "node": ">=14.0.0"
   }
 }

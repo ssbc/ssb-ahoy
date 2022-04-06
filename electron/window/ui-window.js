@@ -2,6 +2,8 @@ const electron = require('electron')
 const WindowState = require('electron-window-state')
 const path = require('path')
 
+const preloadPath = path.join(__dirname, '../preload.js')
+
 module.exports = function uiWindow (url, opts = {}) {
   const windowState = WindowState({
     defaultWidth: 1024,
@@ -29,7 +31,7 @@ module.exports = function uiWindow (url, opts = {}) {
     webPreferences: {
       nodeIntegration: false,
       contextIsolation: true,
-      preload: path.join(__dirname, '../preload.js')
+      preload: preloadPath
     }
   })
 

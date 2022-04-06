@@ -17,6 +17,8 @@ ahoy(
     if (err) throw err
 
     console.log('ahoy started', ssb.id)
+
+    // publish a message!
     ssb.publish(
       { type: 'success', time: new Date().toString() },
       (err, msg) => {
