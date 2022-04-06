@@ -1,10 +1,9 @@
 # ssb-ahoy !
 
-A simple module for getting electron-based scuttlebutt apps up and running.
+A module for building electron-based scuttlbutt apps.
+You provide a UI and plugins, and `ssb-ahoy` takes care of boring details for you.
 
-Builds on top of:
-- `electron@18`
-- `secret-stack@6`
+Built with `electron@18.0.1` and `secret-stack@6`
 
 ## Getting started 
 
@@ -12,8 +11,7 @@ Builds on top of:
 $ npm i ssb-ahoy
 ```
 
-Set up the root file for your project. `ssb-ahoy` takes care of starting a scuttelbutt
-server for you, and launches a UI window with the ui you provide:
+Create a root file for your project:
 ```js
 // index.js
 const ahoy = require('ssb-ahoy')
@@ -46,9 +44,9 @@ Add a script to your package.json:
 }
 ```
 
-Run it
-```js
-npm start
+Run it:
+```bash
+$ npm start
 ```
 
 ## API
@@ -80,6 +78,18 @@ npm start
 
 Convenience method which is a `promisify`'d version of the last method.
 
+## `window.ahoy` (ui window api)
+
+There's a method exposed in the UI window, that can be used like this:
+
+```js
+window.ahoy.getConfig()
+  .then(config => {
+    // could use this to connect to back end with e.g. ssb-client
+    console.log(config)
+  })
+```
+
 
 ## Example
 
@@ -96,15 +106,20 @@ Your project MUST have:
     {
       "main": "index.js",
       "script": {
-        "release": "electron-builder --config builder/config.js"`
+        "release": "electron-builder --config builder/config.js"
       }
     }
     ```
+- an `electron-builder` config
+    - see `example/builder/config.simple.js` for the most minimal template
+    - see `example/builder/config.js` for a config which shaves off 5MB O.o
+
 
 ### Native dependencies
 
-Scuttlebutt is built with _native dependencies_ - libraries for cryptography and databases
-depend on lower level C libraries that have been compiled for particular architectures (i.e. are native).
+Scuttlebutt is built with _native dependencies_ - libraries for cryptography/ database work
+that depend on lower level C libraries that need to be compiled for particular architectures
+(i.e. are native).
 
 `electron-builder` does a great job of making sure that the versions installed are compatible
 with the electron environement we're running them in, but sometimes it trips up.
@@ -118,6 +133,11 @@ You can often address this by adding a script to your package.json like:
       }
     }
     ```
+
+Most of the modules typically used have "prebuilds" which are just fetched from the internet.
+If a prebuild doesn't exist you may have to build it yourself - read the errors, you'll likely
+see `node-gyp` mentioned, which is a one common node tool for compiling dependencies.
+
 
 ## Resouces:
 
@@ -137,12 +157,17 @@ You can often address this by adding a script to your package.json like:
     - ensure it's tested + stable in this module
     - help `electron-builder` to know _exactly_ what it's building against
 
-## TODO
+- adding `electron` and `electron-builder` as peerDependencies was done to try and make it as easy as possible to get started with `ssb-ahoy`. Things to take into acount if changing this:
+    - build size: current example app makes an 83MB AppImage
+        - if you set things up incorrectly, this will jump to 125MB+
+    - not having to manually install lots of modules
+    - `electron-builder` shouldn't need to be told what version of `electron` it's building for
 
-- [ ] example
-    - [ ] add `electron-builder`
-    - [ ] see if can remove `electron` as a dependancy of projects using ahoy
-
-- [ ] make noderify'able
-
+- To inspect `app.asar` files:
+    ```bash
+    $ cd example/dist/installers/linux-unpacked/resources
+    $ npx asar extract app.asar destfolder
+    $ filelight destfolder
+    ```
+    _filelight is a linux tool for visually exploring folders_
 
