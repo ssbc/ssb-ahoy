@@ -16,7 +16,7 @@
   "author": "",
   "license": "AGPL-3.0",
   "dependencies": {
-    "ssb-ahoy": "github:ssbc/ssb-ahoy#main_server",
+    "ssb-ahoy": "^5.0.0",
     "ssb-backlinks": "^2.1.1",
     "ssb-db": "^20.4.1"
   },
