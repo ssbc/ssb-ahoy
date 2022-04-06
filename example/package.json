@@ -2,11 +2,15 @@
   "name": "example-ahoy",
   "version": "0.1.0",
   "description": "",
-  "main": "index.js",
+  "main": "main.bundle.js",
   "scripts": {
-    "start": "electron index.js",
-    "build:deps": "electron-builder install-app-deps",
-    "release": "electron-builder --config builder/config.js",
+    "dev": "electron main.js",
+    "start": "electron main.bundle.js",
+    "build": "npm run build:main && npm run build:ui",
+    "build:main": "noderify main.js --filter=electron > main.bundle.js",
+    "build:ui": "echo 'building ui...'",
+    "pack": "electron-builder --config builder/config.js",
+    "release": "npm run build && npm run pack",
     "lint": "standard --fix"
   },
   "author": "",
@@ -17,6 +21,7 @@
     "ssb-db": "^20.4.1"
   },
   "devDependencies": {
+    "noderify": "^5.1.0",
     "standard": "^16.0.4"
   }
 }
