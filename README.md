@@ -78,6 +78,18 @@ $ npm start
 
 Convenience method which is a `promisify`'d version of the last method.
 
+## `window.ahoy` (ui window api)
+
+There's a method exposed in the UI window, that can be used like this:
+
+```js
+window.ahoy.getConfig()
+  .then(config => {
+    // could use this to connect to back end with e.g. ssb-client
+    console.log(config)
+  })
+```
+
 
 ## Example
 
