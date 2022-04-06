@@ -2,10 +2,9 @@
   "name": "example-ahoy",
   "version": "0.1.0",
   "description": "",
-  "main": "index.bundle.js",
+  "main": "index.js",
   "scripts": {
-    "start": "electron --require=leveldown --require=sodium-native dist/main/index.js",
-    "build:main": "node scripts/esbuild.js",
+    "start": "electron index.js",
     "build:deps": "electron-builder install-app-deps",
     "release": "electron-builder --config builder/config.js",
     "lint": "standard --fix"
@@ -18,8 +17,6 @@
     "ssb-db": "^20.4.1"
   },
   "devDependencies": {
-    "electron": "^18.0.1",
-    "esbuild": "^0.14.31",
     "standard": "^16.0.4"
   }
 }
