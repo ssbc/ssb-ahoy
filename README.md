@@ -87,8 +87,9 @@ Your project:
 
 Resouces:
 - `electron-builder` docs: www.electron.build
-- Notes on Apple's painful signing process
+- Apple's painful signing process:
     - https://kilianvalkhof.com/2019/electron/notarizing-your-electron-application/
+- Electron releases: https://www.electronjs.org/releases/stable#18.0.1
 
 ---
 
