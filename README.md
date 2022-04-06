@@ -8,13 +8,19 @@ Builds on top of:
 
 ## Getting started 
 
+```bash
+$ npm i ssb-ahoy
+```
+
+Set up the root file for your project. `ssb-ahoy` takes care of starting a scuttelbutt
+server for you, and launches a UI window with the ui you provide:
 ```js
 // index.js
 const ahoy = require('ssb-ahoy')
 const path = require('path')
 
 ahoy(
-  'http://localhost:8080', // dev-server for UI
+  'http://localhost:8080', // an address (http/file) for UI
   {
     plugins: [
       require('ssb-db'),
@@ -29,13 +35,20 @@ ahoy(
 )
 ```
 
+Add a script to your package.json:
 ```json
 // package.json
 {
+  "main": "index.js",
   "scripts": {
     "start": "electron index.js"
   }
 }
+```
+
+Run it
+```js
+npm start
 ```
 
 ## API
@@ -75,21 +88,44 @@ see `example/` folder for a simple example application.
 
 ## Building installers
 
-Your project:
-- MUST have a package.json script `"start": "electron index.js"`
-- MUST provide an `electron-builder` config
-    - MUST alert builder of any native deps needed to be included
-    - highly recommend using a `.js` file so you can leave comments as it gets more complex!
-    - call this with a script like `"release": "electron-builder --config builder/config.js"`
-- MUST rebuild native dependancies to be compatible with electron abi's
-    - EITHER run `npm run install` (which triggers a postinstall scipt)
-    - OR add a package.json script for calling `electron-builder install-app-deps`
+Your project MUST have:
+- a package.json with:
+    - `main` pointing at your ahoy root file (electron-builder uses this to build from)
+    - `script` for building release
+    ```json
+    {
+      "main": "index.js",
+      "script": {
+        "release": "electron-builder --config builder/config.js"`
+      }
+    }
+    ```
 
-Resouces:
+### Native dependencies
+
+Scuttlebutt is built with _native dependencies_ - libraries for cryptography and databases
+depend on lower level C libraries that have been compiled for particular architectures (i.e. are native).
+
+`electron-builder` does a great job of making sure that the versions installed are compatible
+with the electron environement we're running them in, but sometimes it trips up.
+
+You can often address this by adding a script to your package.json like:
+    ```json
+    {
+      "script": {
+        "postinstall": "npm run fixDeps",
+        "fixDeps": "electron-builder install-app-deps"
+      }
+    }
+    ```
+
+## Resouces:
+
 - `electron-builder` docs: www.electron.build
 - Apple's painful signing process:
     - https://kilianvalkhof.com/2019/electron/notarizing-your-electron-application/
 - Electron releases: https://www.electronjs.org/releases/stable#18.0.1
+
 
 ---
 
