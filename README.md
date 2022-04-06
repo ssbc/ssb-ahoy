@@ -80,7 +80,7 @@ Your project:
 - MUST provide an `electron-builder` config
     - MUST alert builder of any native deps needed to be included
     - highly recommend using a `.js` file so you can leave comments as it gets more complex!
-    - call this with a script like `"release": "electron-builder --config builder.config.js"`
+    - call this with a script like `"release": "electron-builder --config builder/config.js"`
 - MUST rebuild native dependancies to be compatible with electron abi's
     - EITHER run `npm run install` (which triggers a postinstall scipt)
     - OR add a package.json script for calling `electron-builder install-app-deps`

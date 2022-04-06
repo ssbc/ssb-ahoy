@@ -1,6 +1,6 @@
 {
   "name": "ssb-ahoy",
-  "version": "4.1.2",
+  "version": "5.0.0-alpha",
   "description": "handle the initial sync as you join scuttlebutt for the first time",
   "repository": {
     "type": "git",
@@ -8,7 +8,6 @@
   },
   "main": "index.js",
   "scripts": {
-    "postinstall": "electron-builder install-app-deps"
   },
   "keywords": [
     "scuttlebutt",
@@ -25,9 +24,5 @@
     "ssb-caps": "^1.1.0",
     "ssb-config": "^3.2.5",
     "ssb-keys": "^8.2.0"
-  },
-  "devDependencies": {
-    "electron": "18.0.1",
-    "electron-builder": "^22.14.13"
   }
 }
