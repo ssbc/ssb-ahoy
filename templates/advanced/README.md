@@ -29,7 +29,8 @@ _Produces an installer of ~81MB (for AppImage)_
 Differnt parts of the app are "built":
 - `npm run build:main` bundles the `main.js` electron process up into `main.bundle.js`
     - this makes for faster startup _(electron doesn't have to read thousands of files)_
-    - AND it grabs only the files _(like a light tree-shake)_
+    - AND it grabs only the files required _(a light tree-shake)_
+    - noderify reads config in `.noderifyrc`
 - `npm run build:ui` bundles the UI up into a bundled version (this is mocked here)
 
 Then we build the installer, following `builder/config.js` instructions
@@ -53,6 +54,13 @@ We then do some platform specific modifications:
 Finally we auto-publish the new release to Github
 - see `bulder/config.js`, `publish`
 - see `electron-builder.env` where Github Tokens can be stored
+
+
+## Bonus
+
+If your UI bundling is fancy, it might care what targets it's bundling for.
+Because we're using an _exact_ electron version, we can pin this in our package.json
+`browerserslist` and get smaller, modern-only bundles.
 
 ## :fire: WARNING
 

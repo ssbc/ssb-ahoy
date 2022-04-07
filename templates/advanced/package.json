@@ -7,11 +7,14 @@
     "dev": "electron main.js",
     "start": "electron main.bundle.js",
     "build": "npm run build:main && npm run build:ui",
-    "build:main": "noderify main.js --filter=electron > main.bundle.js",
+    "build:main": "noderify main.js > main.bundle.js",
     "build:ui": "echo 'building ui...'",
     "pack": "electron-builder --config builder/config.js",
     "release": "npm run build && npm run pack -- --publish always"
   },
+  "browserstlist": [
+    "electron 18.0.1"
+  ],
   "dependencies": {
     "ssb-ahoy": "^5.0.0",
     "ssb-backlinks": "^2.1.1",
