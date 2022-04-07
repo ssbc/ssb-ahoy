@@ -1,7 +1,7 @@
 {
-  "name": "example-ahoy",
+  "name": "advanced-ahoy",
   "version": "0.1.0",
-  "description": "",
+  "description": "This example app shows you a minimal setup covering: - package.json scripts - electron-builder config     - a good starter config (builder/config.js)     - a directory structure for collecting OS specific assets for building (builder/win/ for window s etc)",
   "main": "main.bundle.js",
   "scripts": {
     "dev": "electron main.js",
@@ -10,18 +10,15 @@
     "build:main": "noderify main.js --filter=electron > main.bundle.js",
     "build:ui": "echo 'building ui...'",
     "pack": "electron-builder --config builder/config.js",
-    "release": "npm run build && npm run pack",
-    "lint": "standard --fix"
+    "release": "npm run build && npm run pack -- --publish always"
   },
-  "author": "",
-  "license": "AGPL-3.0",
   "dependencies": {
-    "ssb-ahoy": "github:ssbc/ssb-ahoy#main_server",
+    "ssb-ahoy": "^5.0.0",
     "ssb-backlinks": "^2.1.1",
     "ssb-db": "^20.4.1"
   },
   "devDependencies": {
-    "noderify": "^5.1.0",
-    "standard": "^16.0.4"
+    "electron-notarize": "^1.2.1",
+    "noderify": "^5.1.0"
   }
 }

@@ -91,28 +91,33 @@ window.ahoy.getConfig()
 ```
 
 
-## Example
+## Templates
 
-see `example/` folder for a simple example application.
+This repo includes two working example templates.
+Start simple and upgrade as your interest and time permits
+
+- [Simple Template](./templates/simple/README.md)
+- [Advanced Template](./templates/advanced/README.md)
 
 
 ## Building installers
 
 Your project MUST have:
 - a package.json with:
-    - `main` pointing at your ahoy root file (electron-builder uses this to build from)
+    - `main` pointing at the file which contains your ahoy setup (electron-builder uses this to build from)
     - `script` for building release
     ```json
     {
-      "main": "index.js",
+      "main": "main.js",
       "script": {
         "release": "electron-builder --config builder/config.js"
       }
     }
     ```
 - an `electron-builder` config
-    - see `example/builder/config.simple.js` for the most minimal template
-    - see `example/builder/config.js` for a config which shaves off 5MB O.o
+    - the "release" script points at this
+    - putting your config in a `js` file means you can annotate it (you should)
+    - see `templates/builder/config.js` for the most minimal template
 
 
 ### Native dependencies
@@ -157,11 +162,15 @@ see `node-gyp` mentioned, which is a one common node tool for compiling dependen
     - ensure it's tested + stable in this module
     - help `electron-builder` to know _exactly_ what it's building against
 
-- adding `electron` and `electron-builder` as peerDependencies was done to try and make it as easy as possible to get started with `ssb-ahoy`. Things to take into acount if changing this:
+- adding `electron` and `electron-builder` to peerDependencies was done to try and make it as easy as possible to get started with `ssb-ahoy`. Things to take into acount if changing this:
     - build size: current example app makes an 83MB AppImage
         - if you set things up incorrectly, this will jump to 125MB+
     - not having to manually install lots of modules
     - `electron-builder` shouldn't need to be told what version of `electron` it's building for
+
+- adding `dmg-license` to optionalDependencies was done to try and make it as easy as possible to get started for mac users
+    - this module throws some error if you try and isntall it on linux
+    - listing it here seems to stimulate installation of it on macs
 
 - To inspect `app.asar` files:
     ```bash

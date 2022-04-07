@@ -1,7 +1,7 @@
 // see https://www.electron.build/configuration/configuration
 
 module.exports = {
-  appId: 'com.example-ahoy.app',
+  appId: 'com.simple-ahoy.app',
   directories: {
     output: 'installers'
   },
@@ -28,7 +28,5 @@ module.exports = {
   },
   nsis: {
     artifactName: '${name}-Windows-${version}.${ext}', // eslint-disable-line
-    include: 'build/win/add-missing-dll.nsh' // fixes missing VCRUNTIME140.dll
-    // source: https://github.com/sodium-friends/sodium-native/issues/100
   }
 }
