@@ -29,6 +29,9 @@
     "electron": "18.0.1",
     "electron-builder": "^22.14.13"
   },
+  "optionalDependencies": {
+    "dmg-license": "^1.0.11"
+  },
   "engines": {
     "node": ">=14.0.0"
   }
