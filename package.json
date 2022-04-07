@@ -1,14 +1,13 @@
 {
   "name": "ssb-ahoy",
-  "version": "5.0.0",
+  "version": "5.0.1",
   "description": "handle the initial sync as you join scuttlebutt for the first time",
   "repository": {
     "type": "git",
     "url": "git://github.com/ssbc/ssb-ahoy.git"
   },
   "main": "index.js",
-  "scripts": {
-  },
+  "scripts": {},
   "keywords": [
     "scuttlebutt",
     "electron"
