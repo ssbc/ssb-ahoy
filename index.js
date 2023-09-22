@@ -33,7 +33,7 @@ module.exports = function ahoy (url, opts, cb) {
     log('quitting')
   })
 
-  app.on('ready', () => {
+  app.whenReady().then(() => {
     // reply to ui-window calls for ssb config
     ipcMain.handle('get-config', () => config)
 
