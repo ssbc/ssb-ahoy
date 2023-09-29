@@ -61,12 +61,9 @@ function startSSB (plugins, config, cb) {
 
   const ssb = stack(config)
 
-  const isReady = ssb.whoami
-  // TODO 2022-04-05 - replace with a fn which is a better test of "ready"
-  isReady((err, data) => {
-    if (err) throw new Error(err)
-    cb(null, ssb)
-  })
+  // need a way to check if is ready (that is db1 / db2 agnostic)
+  ssb.getManifest()
+  cb(null, ssb)
 }
 
 function launchUI (url, title, state, cb) {

@@ -1,5 +1,6 @@
 {
   "name": "simple-ahoy",
+  "description": "bare bones ahoy!",
   "version": "0.1.0",
   "main": "main.js",
   "scripts": {
@@ -10,8 +11,11 @@
     "release": "npm run build:ui && npm run pack"
   },
   "dependencies": {
-    "ssb-ahoy": "^5.0.0",
-    "ssb-backlinks": "^2.1.1",
-    "ssb-db": "^20.4.1"
+    "ssb-ahoy": "../..",
+    "ssb-db2": "^7.1.1"
+  },
+  "devDependencies": {
+    "electron": "26.2.3",
+    "electron-builder": "^24.6.4"
   }
 }

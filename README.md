@@ -3,7 +3,9 @@
 A module for building electron-based scuttlbutt apps.
 You provide a UI and plugins, and `ssb-ahoy` takes care of boring details for you.
 
-Built with `electron@18.0.1` and `secret-stack@6`
+Built with `electron@26.2.3` and `secret-stack@7`
+
+This version of electron runs Node version `18.16.1`
 
 ## Getting started 
 
@@ -146,11 +148,14 @@ see `node-gyp` mentioned, which is a one common node tool for compiling dependen
 
 ## Resouces:
 
-- `electron-builder` docs: www.electron.build
+- `electron`
+  - www.electronjs.org/releases
+  - [CHANGELOG](https://www.electronjs.org/releases/stable)
+- `electron-builder`
+  - www.electron.build
+  - [CHANGELOG](https://github.com/electron-userland/electron-builder/blob/master/packages/electron-builder/CHANGELOG.md)
 - Apple's painful signing process:
     - https://kilianvalkhof.com/2019/electron/notarizing-your-electron-application/
-- Electron releases: https://www.electronjs.org/releases/stable#18.0.1
-
 
 ---
 

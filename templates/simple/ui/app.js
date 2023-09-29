@@ -3,28 +3,27 @@
 
 const app = document.getElementById('app')
 
-async function start () {
-  const title = h('h1', 'Example Ahoy!')
-  const message = h('div', 'loading...')
+const title = h('h1', 'Example Ahoy!')
+const message = h('div', 'loading...')
 
-  app.appendChild(title)
-  app.appendChild(message)
+app.appendChild(title)
+app.appendChild(message)
 
-  // We use electron window functions to expose safe IPC call getConfig()
-  const config = await window.ahoy.getConfig()
-  console.log('ssb config:', config)
-  message.innerHTML = `
-    <p>
-      Current app path:
-      <pre><code>  ${config.path}</code></pre>
-    </p>
-    <p>
-      My feedId:
-      <pre><code>  ${config.keys.id}</code></pre>
-    </p>
-  `
-}
-start()
+// We use electron window functions to expose safe IPC call getConfig()
+window.ahoy.getConfig()
+  .then(config => {
+    console.log('ssb config:', config)
+    message.innerHTML = `
+      <p>
+        Current app path:
+        <pre><code>  ${config.path}</code></pre>
+      </p>
+      <p>
+        My feedId:
+        <pre><code>  ${config.keys.id}</code></pre>
+      </p>
+    `
+  })
 
 function h (type, text) {
   const newEl = document.createElement(type)
