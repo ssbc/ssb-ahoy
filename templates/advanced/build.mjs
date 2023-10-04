@@ -12,6 +12,7 @@ await esbuild.build({
   plugins: [
     dirnameFix.filelocPlugin()
     // fixes __dirname refs used by node-gyp-build
+    // see also: https://github.com/evanw/esbuild/issues/859
   ],
   outfile: 'main.bundle.js'
 })
