@@ -14,7 +14,7 @@ To run this in development mode, clone this repo down, then :
 ```bash
 $ cd ssb-ahoy/templates/advanced
 $ npm i
-$ npm run start
+$ npm run dev
 ```
 
 To build an installer/ executable :

@@ -6,8 +6,7 @@ ahoy(
   {
     title: 'example-ahoy',
     plugins: [
-      require('ssb-db'),
-      require('ssb-backlinks')
+      require('ssb-db2')
     ],
     config: {
       // path: join(__dirname, 'dev-data')
@@ -19,12 +18,13 @@ ahoy(
     console.log('ahoy started', ssb.id)
 
     // publish a message!
-    ssb.publish(
-      { type: 'success', time: new Date().toString() },
-      (err, msg) => {
-        if (err) throw err
-        console.log(JSON.stringify(msg, null, 2))
-      }
-    )
+    const content = {
+      type: 'success',
+      time: new Date().toString()
+    }
+    ssb.db.create({ content }, (err, msg) => {
+      if (err) throw err
+      console.log(JSON.stringify(msg, null, 2))
+    })
   }
 )

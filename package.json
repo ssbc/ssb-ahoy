@@ -16,22 +16,22 @@
   "license": "AGPL-3.0",
   "dependencies": {
     "deep-extend": "^0.6.0",
-    "electron-default-menu": "^1.0.1",
+    "electron-default-menu": "^1.0.2",
     "electron-window-state": "^5.0.3",
     "env-paths": "^2.2.1",
-    "secret-stack": "^6.4.1",
+    "secret-stack": "^7.1.0",
     "ssb-caps": "^1.1.0",
-    "ssb-config": "^3.2.5",
-    "ssb-keys": "^8.2.0"
+    "ssb-config": "^3.4.6",
+    "ssb-keys": "^8.5.0"
   },
   "peerDependencies": {
-    "electron": "18.0.1",
-    "electron-builder": "^22.14.13"
+    "electron": "26.2.4",
+    "electron-builder": "^24.6.4"
   },
   "optionalDependencies": {
     "dmg-license": "^1.0.11"
   },
   "engines": {
-    "node": ">=14.0.0"
+    "node": ">=18.0.0"
   }
 }
