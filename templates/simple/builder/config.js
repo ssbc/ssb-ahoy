@@ -1,5 +1,6 @@
-// see https://www.electron.build/configuration/configuration
+/* eslint-disable no-template-curly-in-string */
 
+// https://www.electron.build/configuration/configuration
 module.exports = {
   appId: 'com.simple-ahoy.app',
   directories: {
@@ -12,7 +13,8 @@ module.exports = {
     target: 'AppImage'
   },
   appImage: {
-    artifactName: '${name}-Linux-${version}-${arch}.${ext}' // eslint-disable-line
+    artifactName: '${name}-Linux_${arch}.${ext}'
+    // we drop the version for Linux so AppImage can be dropped in place
   },
 
   /* Mac */
@@ -20,13 +22,13 @@ module.exports = {
     category: 'public.app-category.social-networking'
   },
   dmg: {
-    artifactName: '${name}-Mac-${version}.${ext}', // eslint-disable-line
+    artifactName: '${name}-Mac_${version}.${ext}'
   },
 
   /* Windows */
   win: {
   },
   nsis: {
-    artifactName: '${name}-Windows-${version}.${ext}', // eslint-disable-line
+    artifactName: '${name}-Windows_${version}.${ext}'
   }
 }
