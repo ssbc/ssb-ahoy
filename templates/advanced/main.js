@@ -6,7 +6,8 @@ ahoy(
   {
     title: 'example-ahoy',
     plugins: [
-      require('ssb-db2')
+      require('ssb-db2'),
+      require('ssb-hyper-blobs')
     ],
     config: {
       // path: join(__dirname, 'dev-data')

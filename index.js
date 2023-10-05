@@ -11,7 +11,6 @@ const log = logger.bind(null, 'main')
 const buildConfig = require('./lib/build-config')
 
 module.exports = function ahoy (url, opts = {}, cb) {
-  console.log('RUNNING AHOY')
   if (cb === undefined) return promisify(ahoy)(url, opts)
 
   const {

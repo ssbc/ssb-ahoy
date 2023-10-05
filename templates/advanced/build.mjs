@@ -5,7 +5,7 @@ await esbuild.build({
   entryPoints: ['main.js'],
   bundle: true,
   platform: 'node',
-  target: 'node18.16.1',
+  target: 'node16.15.0',
   external: [
     'electron' // shouldn't bundle
   ],
