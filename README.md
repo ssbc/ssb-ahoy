@@ -3,9 +3,9 @@
 A module for building electron-based scuttlbutt apps.
 You provide a UI and plugins, and `ssb-ahoy` takes care of boring details for you.
 
-Built with `electron@26.2.3` and `secret-stack@7`
+Built with `electron@20.3.8` and `secret-stack@7`
 
-This version of electron runs Node version `18.16.1`
+This version of electron runs Node version `16.15.0`
 
 ## Getting started 
 
@@ -185,4 +185,6 @@ see `node-gyp` mentioned, which is a one common node tool for compiling dependen
     ```
     - alternatively, temporarily set `asar: false` in electron-builder config
     - _filelight is a linux tool for visually exploring folders_
-
+- `electron > 20.3.8` currently breaks important `sodium-native` functions
+    - https://github.com/sodium-friends/sodium-native/issues/185
+    - this is currently blocking further upgrades
