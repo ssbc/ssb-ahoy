@@ -8,21 +8,22 @@ const UIWindow = require('./electron/window/ui-window')
 const logger = require('./lib/log')
 const log = logger.bind(null, 'main')
 
-const Config = require('./lib/build-config')
+const buildConfig = require('./lib/build-config')
 
-module.exports = function ahoy (url, opts, cb) {
+module.exports = function ahoy (url, opts = {}, cb) {
+  console.log('RUNNING AHOY')
   if (cb === undefined) return promisify(ahoy)(url, opts)
 
   const {
     title = 'hello_world',
     plugins = [],
-    config: _config
+    config: optConfig
   } = opts
 
-  const config = Config(title, plugins, _config)
+  const config = buildConfig(title, plugins, optConfig)
 
-  if (!Array.isArray(plugins)) throw Error('ssb-ahoy: plugins must be an array')
-  if (!isValidUrl(url)) throw Error('ssb-ahoy: expects a ui URL which starts with http: | https: | file:')
+  if (!Array.isArray(plugins)) return cb(Error('ssb-ahoy: plugins must be an array'))
+  if (!isValidUrl(url)) return cb(Error('ssb-ahoy: expects a ui URL which starts with http: | https: | file:'))
 
   const state = {
     quitting: false
@@ -40,13 +41,13 @@ module.exports = function ahoy (url, opts, cb) {
     Menu()
 
     startSSB(plugins, config, (err, ssb) => {
-      if (err) throw err // TODO launch error UI
+      if (err) return cb(Error(err, { cause: 'ssb-ahoy failed to start SSB stack' }))
 
       config.manifest = ssb.getManifest()
       // TODO write to path/manifest.json
 
       launchUI(url, title, state, (err) => {
-        if (err) throw err // TODO launch error UI
+        if (err) return cb(Error(err, { cause: 'ssb-ahoy failed launch UI' }))
         cb(null, ssb)
       })
     })
@@ -59,10 +60,16 @@ function startSSB (plugins, config, cb) {
   const stack = secretStack({ caps: config.caps || caps })
   plugins.forEach(plugin => stack.use(plugin))
 
-  const ssb = stack(config)
+  let ssb
+  try {
+    ssb = stack(config)
 
-  // need a way to check if is ready (that is db1 / db2 agnostic)
-  ssb.getManifest()
+    // need a way to check if is ready (that is db1 / db2 agnostic)
+    ssb.getManifest()
+  } catch (err) {
+    return cb(err)
+  }
+
   cb(null, ssb)
 }
 
