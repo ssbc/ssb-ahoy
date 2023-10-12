@@ -8,6 +8,9 @@ ahoy(
     plugins: [
       require('ssb-db2'),
       require('ssb-hyper-blobs')
+      // NOTE: the inclusion of this required patches replace `sodium_malloc` with `Buffer.alloc`.
+      // This is because `sodium_malloc` depends on a napi call to create an external buffer,
+      // which is a feature broken in Electron 21+ by the new v8 "memory cage".
     ],
     config: {
       // path: join(__dirname, 'dev-data')
