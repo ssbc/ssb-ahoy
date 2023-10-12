@@ -25,7 +25,7 @@
     "ssb-keys": "^8.5.0"
   },
   "peerDependencies": {
-    "electron": "20.3.8",
+    "electron": "26.4.0",
     "electron-builder": "^24.6.4"
   },
   "optionalDependencies": {

@@ -1,0 +1,32 @@
+diff --git a/node_modules/artefact-store/encrypt.js b/node_modules/artefact-store/encrypt.js
+index 0e82de6..6041736 100644
+--- a/node_modules/artefact-store/encrypt.js
++++ b/node_modules/artefact-store/encrypt.js
+@@ -44,7 +44,7 @@ module.exports = function (msgKey, context, offset) {
+ module.exports.key = function () {
+   // allocate a buffer (can also do Buffer.alloc, but sodium is apparently 'extra secure')
+   // at this point buf is then 32 x '0' bytes
+-  const buf = sodium.sodium_malloc(sodium.crypto_stream_KEYBYTES)
++  const buf = Buffer.alloc(sodium.crypto_stream_KEYBYTES)
+ 
+   // this takes the buffer as an argument, and fills it with randomness
+   sodium.randombytes_buf(buf)
+diff --git a/node_modules/artefact-store/util.js b/node_modules/artefact-store/util.js
+index 0810f3c..d1767a9 100644
+--- a/node_modules/artefact-store/util.js
++++ b/node_modules/artefact-store/util.js
+@@ -15,12 +15,12 @@ function toBuffer (bufOrString = '') {
+ 
+ module.exports = {
+   edToCurvePk (publicKey) {
+-    const curvePublicKey = sodium.sodium_malloc(sodium.crypto_box_PUBLICKEYBYTES)
++    const curvePublicKey = Buffer.alloc(sodium.crypto_box_PUBLICKEYBYTES)
+     sodium.crypto_sign_ed25519_pk_to_curve25519(curvePublicKey, toBuffer(publicKey))
+     return curvePublicKey
+   },
+   edToCurveSk (secretKey) {
+-    const curveSecretKey = sodium.sodium_malloc(sodium.crypto_box_SECRETKEYBYTES)
++    const curveSecretKey = Buffer.alloc(sodium.crypto_box_SECRETKEYBYTES)
+     sodium.crypto_sign_ed25519_sk_to_curve25519(curveSecretKey, toBuffer(secretKey))
+     return curveSecretKey
+   },
