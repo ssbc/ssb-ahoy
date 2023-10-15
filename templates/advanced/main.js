@@ -1,5 +1,19 @@
+/* eslint-disable camelcase */
+
 const { join } = require('path')
 const ahoy = require('ssb-ahoy')
+
+// sodium-native monkey patch ---------------------------------
+const na = require('sodium-native')
+na.sodium_malloc = function sodium_malloc_monkey_patched (n) {
+  return Buffer.alloc(n)
+}
+// Electron > 20.3.8 breaks a napi method that `sodium_malloc`
+// depends on to create external buffers. (see v8 memory cage)
+//
+// This crashes electron when called by various libraries, so
+// we monkey-patch this particular function.
+// ------------------------------------------------------------
 
 ahoy(
   `file://${join(__dirname, 'ui', 'index.html')}`,
@@ -8,9 +22,6 @@ ahoy(
     plugins: [
       require('ssb-db2'),
       require('ssb-hyper-blobs')
-      // NOTE: the inclusion of this required patches replace `sodium_malloc` with `Buffer.alloc`.
-      // This is because `sodium_malloc` depends on a napi call to create an external buffer,
-      // which is a feature broken in Electron 21+ by the new v8 "memory cage".
     ],
     config: {
       // path: join(__dirname, 'dev-data')
