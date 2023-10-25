@@ -14,7 +14,7 @@
     "release": "npm run build && npm run pack -- --publish always"
   },
   "browserstlist": [
-    "electron 26.2.4"
+    "electron 26.4.1"
   ],
   "dependencies": {
     "ssb-ahoy": "../..",
@@ -22,7 +22,7 @@
     "ssb-hyper-blobs": "^3.0.0"
   },
   "devDependencies": {
-    "electron": "20.3.8",
+    "electron": "26.4.1",
     "electron-builder": "^24.6.4",
     "electron-notarize": "^1.2.1",
     "esbuild": "^0.19.4",

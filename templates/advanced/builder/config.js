@@ -59,8 +59,6 @@ module.exports = {
 
   /* delete files from the pack! */
   afterPack (context) {
-    fs.rmSync(path.join(context.appOutDir, 'LICENSE.electron.txt'))
-    fs.rmSync(path.join(context.appOutDir, 'LICENSES.chromium.html'))
     // const ls = fs.readdirSync(context.appOutDir)
     // console.log(ls)
   },
