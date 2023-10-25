@@ -3,7 +3,7 @@
 const { join } = require('path')
 const ahoy = require('ssb-ahoy')
 
-// sodium-native monkey patch ---------------------------------
+// WARNING monkey patch! --------------------------------------
 const na = require('sodium-native')
 na.sodium_malloc = function sodium_malloc_monkey_patched (n) {
   return Buffer.alloc(n)

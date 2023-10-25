@@ -15,7 +15,7 @@
     "ssb-db2": "^7.1.1"
   },
   "devDependencies": {
-    "electron": "26.4.0",
+    "electron": "26.4.1",
     "electron-builder": "^24.6.4"
   }
 }
