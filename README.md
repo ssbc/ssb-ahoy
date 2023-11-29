@@ -5,7 +5,7 @@ You provide a UI and plugins, and `ssb-ahoy` takes care of boring details for yo
 
 Built with `electron@20.3.8` and `secret-stack@7`
 
-This version of electron runs Node version `16.15.0`
+This version of electron runs Node version `18.6.1` (or something like it)
 
 ## Getting started 
 
