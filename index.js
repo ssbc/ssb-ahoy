@@ -40,13 +40,13 @@ module.exports = function ahoy (url, opts = {}, cb) {
     Menu()
 
     startSSB(plugins, config, (err, ssb) => {
-      if (err) return cb(Error(err, { cause: 'ssb-ahoy failed to start SSB stack' }))
+      if (err) return cb(Error('ssb-ahoy failed to start SSB stack', { cause: err }))
 
       config.manifest = ssb.getManifest()
       // TODO write to path/manifest.json
 
       launchUI(url, title, state, (err) => {
-        if (err) return cb(Error(err, { cause: 'ssb-ahoy failed launch UI' }))
+        if (err) return cb(Error('ssb-ahoy failed launch UI', { cause: err }))
         cb(null, ssb)
       })
     })
